@@ -1,0 +1,2255 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Death at the Velvet Crown: a murder mystery for two</title>
+<meta name="description" content="A masquerade gala, a dead casino king and six suspects. A murder mystery game for two detectives.">
+<meta name="theme-color" content="#2a0712">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath fill='%23c9a227' d='M50 4C62 24 94 40 94 62c0 14-10 22-22 22-8 0-15-4-19-10 1 10 5 17 13 22H34c8-5 12-12 13-22-4 6-11 10-19 10C16 84 6 76 6 62 6 40 38 24 50 4z'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;700&family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Limelight&family=Special+Elite&display=swap">
+<style>
+/* Velvet Crown: base styles */
+:root {
+  --velvet: #2a0712; --velvet-deep: #14030a; --velvet-hi: #4a0d22;
+  --felt: #0f3a2c; --felt-deep: #08241b;
+  --brass: #c9a227; --brass-hi: #f0d77a; --brass-lo: #7a5d10;
+  --ivory: #efe6d2; --paper: #f3ecdc; --ink: #1d1510; --rouge: #b3123c;
+  --serif: "Cormorant Garamond", Georgia, "Times New Roman", serif;
+  --display: "Limelight", "Cormorant Garamond", Georgia, serif;
+  --type: "Special Elite", "Courier New", monospace;
+  --hand: "Caveat", "Segoe Print", cursive;
+  --radius: 10px;
+}
+*, *::before, *::after { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; background: #14030a; }
+[hidden] { display: none !important; }
+body {
+  margin: 0; min-height: 100vh; color: var(--ivory); font-family: var(--serif); font-size: 19px; line-height: 1.55;
+  background: radial-gradient(140% 70rem at 50% -10%, var(--velvet-hi) 0%, var(--velvet) 45%, var(--velvet-deep) 100%) no-repeat, var(--velvet-deep);
+}
+body.modal-open { overflow: hidden; }
+img, svg { max-width: 100%; }
+h1, h2, h3, h4 { margin: 0; font-weight: 600; line-height: 1.15; }
+p { margin: 0 0 .8em; }
+button, input, textarea { font: inherit; color: inherit; }
+button { cursor: pointer; }
+:focus-visible { outline: 3px solid var(--brass-hi); outline-offset: 3px; border-radius: 4px; }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.screen[hidden] { display: none !important; }
+
+/* Buttons */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: .5rem; min-height: 46px; padding: .55rem 1.3rem;
+  border: 1.5px solid var(--brass); border-radius: 999px; background: transparent; color: var(--brass-hi);
+  font-weight: 700; font-size: 1.05rem; letter-spacing: .02em; transition: background .2s, color .2s, transform .15s;
+}
+.btn:hover { background: rgba(201, 162, 39, .14); }
+.btn:active { transform: translateY(1px); }
+.btn-gold { background: linear-gradient(180deg, #f6df91, #c9a227 55%, #9c7a17); color: #241405; border-color: #f0d77a; box-shadow: 0 6px 18px rgba(0, 0, 0, .35); }
+.btn-gold:hover { background: linear-gradient(180deg, #fbe8a6, #d8b13a 55%, #a98622); }
+.btn-ghost { border-color: rgba(201, 162, 39, .55); color: var(--ivory); }
+.btn-small { min-height: 38px; padding: .3rem .9rem; font-size: .95rem; }
+.btn[disabled] { opacity: .5; cursor: default; }
+.link { background: none; border: 0; padding: 0; color: var(--brass-hi); text-decoration: underline; text-underline-offset: 3px; font-weight: 600; }
+
+/* Sound dock */
+.sound-dock { position: fixed; right: max(14px, env(safe-area-inset-right)); bottom: max(14px, env(safe-area-inset-bottom)); z-index: 40; display: flex; gap: .5rem; }
+.dock-btn {
+  width: 46px; height: 46px; border-radius: 50%; border: 1.5px solid rgba(201, 162, 39, .6); background: rgba(20, 3, 10, .82);
+  display: grid; place-items: center; color: var(--brass-hi); backdrop-filter: blur(4px);
+}
+.dock-btn svg { width: 22px; height: 22px; }
+.dock-btn[aria-pressed="false"] { color: rgba(239, 230, 210, .45); border-color: rgba(239, 230, 210, .25); }
+.dock-btn[aria-pressed="false"] .on-only { display: none; }
+
+/* Title screen */
+.screen-title { position: relative; min-height: 100vh; display: grid; place-items: center; overflow: hidden; padding: 2rem 1.2rem 5rem; }
+.title-wheel { position: absolute; width: min(118vmin, 1150px); aspect-ratio: 1; right: -22vmin; bottom: -38vmin; opacity: .5; pointer-events: none; }
+.title-wheel .roulette { width: 100%; height: 100%; filter: drop-shadow(0 30px 60px rgba(0, 0, 0, .6)); }
+.roulette-wheel { transform-origin: 0 0; animation: spin 90s linear infinite; }
+.roulette-ball { transform-origin: 0 0; animation: spin 14s linear infinite reverse; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.title-card { position: relative; z-index: 1; width: min(760px, 100%); text-align: center; }
+.marquee { position: relative; padding: clamp(2rem, 5vw, 3.4rem) clamp(1.2rem, 4vw, 3.2rem); border: 2px solid var(--brass); border-radius: 22px; background: linear-gradient(180deg, rgba(26, 5, 12, .97), rgba(42, 7, 18, .95)); box-shadow: 0 0 0 6px rgba(20, 3, 10, .9), 0 0 0 7px rgba(201, 162, 39, .35), 0 40px 90px rgba(0, 0, 0, .55); }
+.marquee::before {
+  content: ""; position: absolute; inset: -16px; padding: 14px; border-radius: 30px; pointer-events: none;
+  background: radial-gradient(circle, #fff4c9 0 2.5px, #f0c75a 3.5px, rgba(240, 199, 90, .22) 5.5px, transparent 7px) 0 0 / 24px 24px;
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor;
+  mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); mask-composite: exclude;
+  animation: bulbs 1.6s steps(2, jump-none) infinite alternate;
+}
+@keyframes bulbs { from { opacity: 1; } to { opacity: .55; } }
+.title-kicker { font-style: italic; font-size: 1.25rem; color: var(--brass-hi); margin-bottom: .6rem; }
+.title-card h1 {
+  font-family: var(--display); font-weight: 400; font-size: clamp(2.7rem, 8.5vw, 5.8rem); line-height: .98; letter-spacing: .01em;
+  background: linear-gradient(180deg, #fff3c4 0%, #f0d77a 38%, #c9a227 62%, #8a6a14 100%); -webkit-background-clip: text; background-clip: text; color: transparent;
+  text-shadow: 0 2px 30px rgba(240, 215, 122, .15); margin: 0 0 1rem;
+}
+.title-card h1 span { display: block; font-size: .42em; letter-spacing: .08em; margin-bottom: .2em; }
+.tagline { font-size: clamp(1.15rem, 2.6vw, 1.45rem); font-style: italic; color: rgba(239, 230, 210, .88); max-width: 34ch; margin: 0 auto 1.8rem; }
+.title-actions { display: flex; flex-wrap: wrap; gap: .8rem; justify-content: center; }
+.title-foot { margin-top: 1.6rem; font-size: 1rem; color: rgba(239, 230, 210, .6); }
+
+/* Setup */
+.screen-setup { min-height: 100vh; padding: clamp(1.5rem, 5vw, 4rem) 1.2rem 6rem; }
+.setup { width: min(1060px, 100%); margin: 0 auto; display: grid; grid-template-columns: 1.1fr .9fr; gap: clamp(1.5rem, 4vw, 3.5rem); align-items: start; }
+.setup-crown .crown-mark { width: 64px; height: 48px; fill: var(--brass); }
+.setup h2 { font-family: var(--display); font-weight: 400; font-size: clamp(2rem, 4.6vw, 3rem); color: var(--brass-hi); margin: .6rem 0 .8rem; }
+.setup-lede { font-size: 1.2rem; max-width: 46ch; color: rgba(239, 230, 210, .88); }
+.field { display: block; margin: 1.1rem 0; }
+.field span { display: block; font-weight: 700; margin-bottom: .3rem; }
+.field input { width: 100%; max-width: 420px; min-height: 52px; padding: .5rem 1rem; border-radius: 8px; border: 1.5px solid rgba(201, 162, 39, .55); background: rgba(10, 2, 6, .55); font-size: 1.25rem; }
+.field input::placeholder { color: rgba(239, 230, 210, .4); font-style: italic; }
+.setup-actions { display: flex; gap: .8rem; flex-wrap: wrap; margin-top: 1.6rem; }
+.evening { background: rgba(10, 2, 6, .45); border: 1px solid rgba(201, 162, 39, .3); border-radius: 16px; padding: 1.6rem 1.6rem 1.2rem; }
+.evening h3 { font-size: 1.45rem; color: var(--brass-hi); margin-bottom: .6rem; font-style: italic; }
+.evening p { font-size: 1.05rem; color: rgba(239, 230, 210, .85); }
+.drinks { display: grid; grid-template-columns: 1fr 1fr; gap: .8rem; margin-top: 1rem; }
+.drink { background: var(--paper); color: var(--ink); border-radius: 8px; padding: .9rem 1rem; font-size: .98rem; line-height: 1.4; box-shadow: 0 10px 20px rgba(0, 0, 0, .3); }
+.drink h4 { font-size: 1.15rem; margin-bottom: .1rem; }
+.drink p { margin: 0 0 .4rem; }
+.drink .drink-note { font-style: italic; color: #6b5a48; }
+
+/* Game shell */
+.screen-game { min-height: 100vh; padding-bottom: 6rem; }
+.topbar {
+  position: sticky; top: 0; z-index: 20; display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 1rem;
+  padding: .7rem clamp(.8rem, 3vw, 2rem); background: linear-gradient(180deg, rgba(20, 3, 10, .97), rgba(30, 5, 14, .93));
+  border-bottom: 1px solid rgba(201, 162, 39, .4); backdrop-filter: blur(6px);
+}
+.brand { display: flex; align-items: center; gap: .7rem; min-width: 0; }
+.brand p { margin: 0; }
+.brand-text { min-width: 0; }
+.brand .crown-mark { width: 38px; height: 29px; fill: var(--brass); flex: none; }
+.brand-name { font-family: var(--display); font-size: 1.25rem; color: var(--brass-hi); line-height: 1.1; }
+.brand-sub { font-size: .95rem; color: rgba(239, 230, 210, .7); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.pips { display: flex; gap: .45rem; }
+.pip { width: 36px; height: 36px; border-radius: 50%; display: grid; place-items: center; font-family: var(--display); font-size: 1.05rem; border: 1.5px dashed rgba(239, 230, 210, .3); color: rgba(239, 230, 210, .4); }
+.pip.is-open { border: 1.5px solid var(--brass); background: radial-gradient(circle at 35% 30%, #d8364f, #7d0c24 70%); color: #ffe9b0; }
+.top-right { display: flex; align-items: center; justify-content: flex-end; gap: .7rem; }
+.clock { font-family: var(--type); font-size: 1.05rem; color: var(--brass-hi); min-width: 4.5ch; text-align: right; }
+.icon-btn { width: 44px; height: 44px; border-radius: 50%; border: 1.5px solid rgba(201, 162, 39, .5); background: transparent; color: var(--brass-hi); display: grid; place-items: center; }
+.icon-btn svg { width: 22px; height: 22px; }
+.tabs { display: flex; gap: .4rem; justify-content: center; padding: 1rem 1rem 0; }
+.tab { min-height: 44px; padding: .4rem 1.3rem; border-radius: 12px 12px 0 0; border: 1px solid rgba(201, 162, 39, .35); border-bottom: 0; background: rgba(10, 2, 6, .35); color: rgba(239, 230, 210, .75); font-weight: 700; font-size: 1.05rem; }
+.tab.is-on { background: var(--felt); color: var(--brass-hi); border-color: rgba(201, 162, 39, .6); }
+.table {
+  width: min(1240px, calc(100% - 1.2rem)); margin: 0 auto; border-radius: 26px; padding: clamp(1rem, 3vw, 2.4rem);
+  background: radial-gradient(90% 70% at 50% 0%, #1a5a43 0%, var(--felt) 45%, var(--felt-deep) 100%);
+  border: 10px solid #3b1b0e; box-shadow: inset 0 0 0 2px var(--brass-lo), inset 0 0 60px rgba(0, 0, 0, .5), 0 30px 60px rgba(0, 0, 0, .45);
+}
+
+/* Envelopes and evidence cards */
+.env + .env { margin-top: clamp(2rem, 4vw, 3rem); }
+.env-head { display: flex; align-items: center; gap: 1rem; margin-bottom: 1.3rem; }
+.env-head h2 { font-family: var(--display); font-weight: 400; font-size: clamp(1.35rem, 2.8vw, 1.9rem); color: var(--brass-hi); }
+.env-head p { margin: .2rem 0 0; color: rgba(239, 230, 210, .78); font-style: italic; }
+.seal { flex: none; width: 54px; height: 54px; border-radius: 50%; display: grid; place-items: center; font-family: var(--display); font-size: 1.5rem; color: #ffe2a0; background: radial-gradient(circle at 35% 30%, #d8364f, #8a0f28 60%, #5a0718); box-shadow: 0 0 0 3px rgba(138, 15, 40, .5), 0 6px 14px rgba(0, 0, 0, .5); }
+.seal-dim { filter: grayscale(.7) brightness(.6); }
+.env-sealed .env-head { opacity: .75; }
+.ev-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 1.3rem; }
+.ev {
+  position: relative; display: flex; flex-direction: column; align-items: flex-start; gap: .3rem; min-height: 212px; padding: 1rem 1rem 2.9rem;
+  text-align: left; border: 0; border-radius: 4px; color: var(--ink); background: var(--paper);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .5), 0 12px 24px rgba(0, 0, 0, .45); transform: rotate(var(--r, 0deg));
+  transition: transform .2s ease, box-shadow .2s ease;
+}
+.ev:hover, .ev:focus-visible { transform: rotate(0) translateY(-5px); box-shadow: 0 20px 34px rgba(0, 0, 0, .55); }
+.ev-art { width: 48px; height: 48px; color: var(--rouge); margin-bottom: .3rem; }
+.ev-art .icon { width: 100%; height: 100%; }
+.ev-no { position: absolute; top: .75rem; right: .85rem; font-family: var(--type); font-size: .85rem; opacity: .6; }
+.ev-title { font-weight: 700; font-size: 1.22rem; line-height: 1.15; }
+.ev-blurb { font-size: 1rem; line-height: 1.3; opacity: .8; }
+.ev-new { position: absolute; left: 1rem; bottom: .8rem; font-size: .8rem; font-weight: 700; color: #fff4e0; background: var(--rouge); border-radius: 999px; padding: .05rem .6rem; }
+.ev-report, .ev-lab, .ev-safe, .ev-locker { background: linear-gradient(#c9a86a 0 7px, #f1ede3 7px); }
+.ev-letter, .ev-will { background: #f3e7cf; }
+.ev-statements, .ev-log { background: repeating-linear-gradient(#f4efe2 0 27px, #d9e1ea 27px 28px); }
+.ev-dossier { background: #dcc084; }
+.ev-plan { background: #efe6d2 linear-gradient(90deg, rgba(43, 35, 32, .08) 1px, transparent 1px) 0 0 / 16px 16px; }
+.ev-news { background: #e4dfd1; font-family: var(--serif); }
+.ev-card { background: linear-gradient(135deg, #e4cf98, #c9a866); border-radius: 12px; }
+.ev-photo, .ev-cctv, .ev-film { background: #1c191a; color: var(--ivory); box-shadow: inset 0 0 0 8px #f4f1ea, 0 12px 24px rgba(0, 0, 0, .45); padding: 1.3rem 1.3rem 3rem; }
+.ev-photo .ev-art, .ev-cctv .ev-art, .ev-film .ev-art { color: var(--brass-hi); }
+.ev-programme, .ev-notebook { background: #140a0d; color: var(--ivory); box-shadow: inset 0 0 0 2px var(--brass-lo), 0 12px 24px rgba(0, 0, 0, .45); }
+.ev-programme .ev-art, .ev-notebook .ev-art { color: var(--brass); }
+.ev.is-dealt { animation: deal .8s cubic-bezier(.2, .75, .25, 1) both; animation-delay: calc(var(--i) * 95ms + 120ms); }
+@keyframes deal {
+  from { opacity: 0; transform: translate(-28vw, -45vh) rotate(-38deg) scale(.6); }
+  60% { opacity: 1; }
+  to { opacity: 1; transform: rotate(var(--r, 0deg)); }
+}
+
+/* Locks */
+.lock { display: grid; grid-template-columns: auto 1fr; gap: clamp(1.2rem, 4vw, 3rem); align-items: center; padding: clamp(1.2rem, 3vw, 2rem); border-radius: 18px; background: rgba(6, 22, 16, .55); border: 1.5px dashed rgba(201, 162, 39, .5); }
+.lock-copy h2 { font-family: var(--display); font-weight: 400; font-size: clamp(1.35rem, 2.8vw, 1.9rem); color: var(--brass-hi); margin: .8rem 0 .6rem; }
+.lock-copy p { max-width: 52ch; }
+.lock-status { min-height: 1.6em; font-style: italic; color: var(--brass-hi); }
+.safe { width: 250px; perspective: 900px; border-radius: 14px; background: radial-gradient(circle at 50% 45%, #fff3c4, #c9a227 45%, #3a2a08 80%); box-shadow: inset 0 0 30px rgba(0, 0, 0, .8), 0 16px 30px rgba(0, 0, 0, .5); }
+.safe-door {
+  padding: 1.1rem; border-radius: 14px; transform-origin: left center; transition: transform 1.2s cubic-bezier(.3, .1, .2, 1);
+  background: linear-gradient(145deg, #5d6166, #2c2f33 55%, #1d1f22); border: 3px solid #0f1012;
+  box-shadow: inset 0 2px 0 rgba(255, 255, 255, .2), inset 0 -10px 30px rgba(0, 0, 0, .5);
+}
+.safe-screen { font-family: "Courier New", monospace; font-weight: 700; font-size: 1.9rem; letter-spacing: .15em; text-align: center; padding: .4rem; margin-bottom: .9rem; border-radius: 6px; color: #7cffb2; background: #0b1810; box-shadow: inset 0 0 12px rgba(0, 0, 0, .8); text-shadow: 0 0 8px rgba(124, 255, 178, .6); }
+.safe-keys { display: grid; grid-template-columns: repeat(3, 1fr); gap: .55rem; }
+.key { min-height: 48px; border-radius: 10px; border: 1px solid #0c0c0d; background: linear-gradient(180deg, #f3dc8b, #b8901f); color: #2a1b04; font-weight: 700; font-size: 1.3rem; box-shadow: 0 3px 0 #5e470b; }
+.key:active { transform: translateY(2px); box-shadow: 0 1px 0 #5e470b; }
+.key-word { font-size: .95rem; background: linear-gradient(180deg, #d9d4c6, #8e897d); box-shadow: 0 3px 0 #4d4a43; }
+.safe.is-wrong .safe-door { animation: shake .45s; }
+.safe.is-wrong .safe-screen { color: #ff6b6b; text-shadow: 0 0 8px rgba(255, 107, 107, .6); }
+.safe.is-open .safe-door { transform: rotateY(-105deg); }
+@keyframes shake { 20%, 60% { transform: translateX(-9px); } 40%, 80% { transform: translateX(9px); } }
+.phone { width: 200px; color: var(--brass); }
+.phone svg { width: 100%; height: auto; filter: drop-shadow(0 12px 20px rgba(0, 0, 0, .5)); }
+.call-form { display: flex; flex-wrap: wrap; gap: .6rem; align-items: center; margin: 1rem 0 .4rem; }
+.call-form label { width: 100%; font-weight: 700; }
+.call-form input { flex: 1 1 260px; min-height: 48px; padding: .5rem 1rem; border-radius: 8px; border: 1.5px solid rgba(201, 162, 39, .55); background: rgba(10, 2, 6, .6); font-size: 1.15rem; }
+.final-card { text-align: center; padding: clamp(1.5rem, 4vw, 2.6rem); border-radius: 18px; border: 2px solid var(--brass); background: radial-gradient(circle at 50% 0%, rgba(240, 215, 122, .18), rgba(10, 2, 6, .5) 70%); }
+.final-card h2 { font-family: var(--display); font-weight: 400; font-size: clamp(1.6rem, 3.6vw, 2.4rem); color: var(--brass-hi); margin-bottom: .6rem; }
+.final-card p { max-width: 50ch; margin: 0 auto 1.2rem; }
+.final-actions { display: flex; gap: .8rem; justify-content: center; flex-wrap: wrap; }
+
+</style>
+<style>
+/* Velvet Crown: documents, board, accusation, reveal */
+.modal[hidden] { display: none; }
+.modal { position: fixed; inset: 0; z-index: 50; display: grid; place-items: center; padding: 2vh 2vw; }
+.modal-backdrop { position: absolute; inset: 0; background: rgba(8, 2, 4, .76); backdrop-filter: blur(4px); }
+.modal-sheet { position: relative; width: min(1000px, 100%); max-height: 95vh; overflow: auto; overscroll-behavior: contain; padding: 1rem clamp(.8rem, 3vw, 2.4rem) 1.6rem; border-radius: 16px; background: linear-gradient(180deg, #230912, #16050b); border: 1px solid rgba(201, 162, 39, .45); box-shadow: 0 40px 90px rgba(0, 0, 0, .65); }
+.modal.is-open .modal-sheet { animation: sheetIn .35s cubic-bezier(.2, .8, .2, 1); }
+@keyframes sheetIn { from { opacity: 0; transform: translateY(18px) scale(.985); } }
+.modal-bar { position: sticky; top: -1rem; z-index: 3; display: flex; justify-content: flex-end; margin: -1rem -.4rem .4rem; padding: .7rem 0 .3rem; background: linear-gradient(#230912 70%, rgba(35, 9, 18, 0)); }
+.modal-nav { display: flex; justify-content: space-between; gap: .8rem; flex-wrap: wrap; margin-top: 1.4rem; }
+.modal-nav:empty { display: none; }
+.doc-label { font-family: var(--type); font-size: .95rem; color: var(--brass-hi); text-align: center; margin: -.6rem 0 .8rem; }
+
+/* Paper documents */
+.doc { position: relative; max-width: 800px; margin: 0 auto; padding: clamp(1.2rem, 4vw, 2.6rem); color: var(--ink); background: var(--paper); border-radius: 3px; box-shadow: 0 18px 40px rgba(0, 0, 0, .5); }
+.doc h4 { font-size: 1.15rem; margin: 1.4rem 0 .5rem; }
+.doc-date { text-align: right; font-style: italic; }
+.doc-letter { background: #f6ecd6; font-size: 1.2rem; line-height: 1.6; }
+.letterhead { display: flex; align-items: center; gap: 1rem; padding-bottom: 1rem; margin-bottom: 1.2rem; border-bottom: 2px solid #1d2a4a; color: #1d2a4a; }
+.lh-crest { width: 54px; height: 60px; fill: #1d2a4a; color: #1d2a4a; flex: none; }
+.lh-org { font-weight: 700; font-size: 1.3rem; margin: 0; }
+.lh-sub { margin: 0; font-style: italic; }
+.sign { font-family: var(--hand); font-size: 2.3rem; color: #1d2a4a; margin: 1.2rem 0 0; line-height: 1; }
+.sign-sub { font-style: italic; }
+.doc-report, .doc-log { font-family: var(--type); font-size: 1rem; line-height: 1.65; background: #f2eee4; }
+.rep-head { display: flex; justify-content: space-between; gap: 1rem; flex-wrap: wrap; font-size: .9rem; padding-bottom: .5rem; margin-bottom: 1.2rem; border-bottom: 1px solid #8c8374; color: #4a4036; }
+.rep-title { font-family: var(--type); font-size: 1.3rem; margin: .6rem 0 1rem; }
+.kv { display: grid; grid-template-columns: max-content 1fr; gap: .35rem 1.2rem; margin: 0 0 1rem; }
+.kv dt { font-weight: 700; }
+.kv dd { margin: 0; }
+.kv-tight { gap: .1rem .9rem; font-size: .98rem; }
+.kv-wide { grid-template-columns: 1fr; }
+.kv-wide dt { margin-top: .6rem; }
+.items { padding-left: 1.4rem; }
+.items li { margin-bottom: .4rem; }
+blockquote.hand, .hand-inline { font-family: var(--hand); color: #2a2e6e; }
+blockquote.hand { font-size: 1.6rem; line-height: 1.25; margin: .5rem 0 .3rem; padding: .6rem 1rem; background: #fbf6e8; border-left: 3px solid #2a2e6e; }
+.hand-inline { font-size: 1.35rem; }
+.stamp { position: absolute; top: 2.4rem; right: 1.6rem; transform: rotate(9deg); padding: .2rem .8rem; border: 3px solid rgba(179, 18, 60, .75); color: rgba(179, 18, 60, .8); font-family: var(--type); font-size: 1.2rem; border-radius: 6px; pointer-events: none; }
+.caption { font-style: italic; color: rgba(239, 230, 210, .78); text-align: center; margin: .9rem auto 0; max-width: 60ch; }
+.doc .caption { color: #5b4d3e; }
+.officer { font-family: var(--type); font-size: .92rem; color: #7a1a1a; }
+.ledger { width: 100%; border-collapse: collapse; margin: .4rem 0 1.2rem; font-size: .96rem; }
+.ledger th, .ledger td { text-align: left; vertical-align: top; padding: .45rem .6rem; border-bottom: 1px solid rgba(29, 21, 16, .25); }
+.ledger th { border-bottom: 2px solid rgba(29, 21, 16, .6); }
+.ledger-mono td { font-family: var(--type); }
+.ledger-narrow { max-width: 460px; }
+.ledger .pos { color: #9b0f2f; font-weight: 700; }
+.log-sub { font-style: italic; }
+.doc-photo, .doc-cctv, .doc-film, .doc-plan { background: transparent; box-shadow: none; padding: 0; max-width: 960px; color: var(--ivory); }
+.doc-plan .plan-frame { background: #efe6d2; border-radius: 4px; padding: .5rem; box-shadow: 0 18px 40px rgba(0, 0, 0, .5); overflow-x: auto; }
+.doc-plan .plan { min-width: 640px; display: block; }
+.plan-notes { background: var(--paper); color: var(--ink); margin-top: 1rem; padding: 1rem 1.4rem; border-radius: 3px; }
+.plan-notes h4 { margin-top: .2rem; }
+.photo-tools { display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; margin-bottom: .8rem; font-style: italic; color: rgba(239, 230, 210, .75); font-size: 1rem; }
+.loupe-wrap { position: relative; border: 10px solid #f4f1ea; box-shadow: 0 18px 40px rgba(0, 0, 0, .6); overflow: hidden; line-height: 0; }
+.loupe-wrap.loupe-on { cursor: none; touch-action: none; }
+.loupe-wrap > .scene { width: 100%; height: auto; display: block; }
+.loupe { position: absolute; left: 0; top: 0; width: 190px; height: 190px; border-radius: 50%; overflow: hidden; pointer-events: none; opacity: 0; border: 4px solid var(--brass); box-shadow: 0 10px 30px rgba(0, 0, 0, .7), inset 0 0 20px rgba(0, 0, 0, .5); transition: opacity .15s; }
+.loupe-inner { position: absolute; left: 0; top: 0; }
+.loupe-inner .scene { width: 100%; height: auto; display: block; }
+.cctv-frame, .film-frame { border-radius: 10px; overflow: hidden; border: 10px solid #0d0f0e; box-shadow: 0 18px 40px rgba(0, 0, 0, .6); line-height: 0; }
+.cctv-frame svg, .film-frame svg { width: 100%; height: auto; }
+.tech-notes { background: #f2eee4; color: var(--ink); font-family: var(--type); font-size: .98rem; padding: 1.2rem 1.4rem; margin-top: 1rem; border-radius: 3px; }
+.tech-notes h4 { margin-top: 0; }
+.doc-dossier { background: #d9bc80; }
+.dos-title { font-family: var(--display); font-weight: 400; font-size: 1.8rem; }
+.dos-note { font-style: italic; }
+.dos-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 1rem; }
+.dos-card, .dos-one { display: grid; grid-template-columns: 110px 1fr; gap: 1rem; align-items: start; background: #f6f0e1; padding: 1rem; border-radius: 4px; box-shadow: 0 6px 14px rgba(0, 0, 0, .2); font-size: 1.02rem; line-height: 1.4; }
+.dos-card h4 { margin: 0; font-size: 1.25rem; }
+.dos-role { font-style: italic; margin-bottom: .4rem; }
+.dos-one { max-width: 720px; grid-template-columns: 170px 1fr; }
+.dos-one h3 { font-size: 1.6rem; }
+.dos-links { display: flex; gap: .6rem; flex-wrap: wrap; }
+.dos-links .btn { color: var(--ink); border-color: var(--ink); }
+.portrait { width: 100%; height: auto; display: block; }
+.doc-programme { background: #120709; color: var(--ivory); text-align: center; max-width: 560px; padding: 1rem; }
+.prog-inner { border: 2px solid var(--brass); outline: 1px solid rgba(201, 162, 39, .5); outline-offset: 5px; padding: 2rem 1.4rem; }
+.prog-crown { width: 60px; height: 45px; fill: var(--brass); }
+.prog-kicker { font-style: italic; color: var(--brass-hi); margin: .4rem 0 0; }
+.prog-title { font-family: var(--display); font-weight: 400; font-size: 2.3rem; color: var(--brass-hi); margin: .2rem 0 .3rem; }
+.prog-sub { font-style: italic; }
+.prog-list { list-style: none; padding: 0; margin: 1.4rem 0; text-align: left; }
+.prog-list li { display: grid; grid-template-columns: 4.2rem 1fr; gap: .8rem; padding: .55rem 0; border-top: 1px solid rgba(201, 162, 39, .3); }
+.prog-list time { font-family: var(--display); color: var(--brass); }
+.prog-foot { font-style: italic; color: rgba(239, 230, 210, .7); }
+.jump { display: flex; flex-wrap: wrap; gap: .4rem; margin-bottom: 1rem; }
+.chip { min-height: 36px; padding: .2rem .8rem; border-radius: 999px; border: 1px solid #8c8374; background: #fbf8f0; color: var(--ink); font-size: .95rem; font-weight: 700; }
+.doc-statements { background: #f4efe2; }
+.stmt { padding: 1.2rem 0; border-top: 1px solid rgba(29, 21, 16, .2); scroll-margin-top: 4rem; }
+.stmt-who { display: flex; align-items: center; gap: .9rem; margin-bottom: .6rem; }
+.stmt-who h4 { margin: 0; font-size: 1.25rem; }
+.stmt-who p { margin: 0; font-style: italic; }
+.portrait-mini { width: 62px; flex: none; }
+.badge-initials { width: 62px; height: 62px; flex: none; border-radius: 50%; display: grid; place-items: center; background: #3b2a22; color: var(--brass-hi); font-weight: 700; font-size: 1.3rem; }
+.stmt-body { font-size: 1.12rem; }
+.doc-will { background: #f6ecd6; }
+.notary { font-family: var(--type); font-size: .98rem; padding-bottom: 1.4rem; margin-bottom: 1.4rem; border-bottom: 1px dashed #8c8374; }
+.notary-head { font-weight: 700; }
+.notary-head span { display: block; font-weight: 400; }
+.draft { font-family: var(--hand); font-size: 1.55rem; line-height: 1.35; color: #2a2e6e; }
+.draft-title { text-decoration: underline; }
+.draft-sig { font-size: 2rem; text-align: right; }
+.doc-notebook { background: #1a1012; padding: clamp(.6rem, 2vw, 1.2rem); max-width: 900px; }
+.nb-spread { display: grid; gap: .8rem; }
+.nb-page { position: relative; background: repeating-linear-gradient(#f5efdd 0 33px, #c9d3dd 33px 34px); padding: 1rem 1.2rem 1rem 3rem; font-family: var(--hand); font-size: 1.5rem; line-height: 34px; color: #2a2e6e; border-radius: 2px; }
+.nb-page p { margin: 0 0 .3rem; }
+.nb-no { position: absolute; left: .8rem; top: .9rem; font-family: var(--serif); font-size: 1rem; color: #8c7b66; }
+.nb-help { font-family: var(--serif); font-size: 1.02rem; line-height: 1.4; color: #4a4036; margin: .3rem 0 .8rem !important; }
+.cipher { display: grid; grid-template-columns: repeat(auto-fill, minmax(52px, 1fr)); gap: .5rem; }
+.cell { display: flex; flex-direction: column; align-items: center; gap: .25rem; }
+.cell input { width: 46px; height: 42px; text-align: center; font-family: var(--hand); font-size: 1.6rem; color: #2a2e6e; background: #fffdf6; border: 1.5px solid #9a8f7c; border-radius: 6px; text-transform: uppercase; }
+.mcard { display: inline-flex; flex-direction: column; align-items: center; justify-content: center; width: 44px; height: 60px; border-radius: 6px; background: #fff; border: 1px solid #b9b2a2; box-shadow: 0 2px 4px rgba(0, 0, 0, .15); font-family: Georgia, serif; font-weight: 700; font-size: 1.1rem; line-height: 1; }
+.mcard svg { width: 18px; height: 18px; margin-top: 3px; fill: currentColor; }
+.is-red { color: #a3122f; fill: #a3122f; }
+.is-black { color: #1b1411; fill: #1b1411; }
+.suit { width: 1.2em; height: 1.2em; vertical-align: -.2em; }
+.doc-shorthand { background: transparent; box-shadow: none; max-width: 520px; }
+.oldcard { background: linear-gradient(135deg, #ecdcaa, #cdb173); border-radius: 18px; padding: 2rem 1.8rem; box-shadow: 0 18px 40px rgba(0, 0, 0, .55), inset 0 0 40px rgba(120, 80, 20, .35); transform: rotate(-2deg); }
+.oldcard-writing { font-family: var(--hand); color: #2a1e10; font-size: 1.75rem; line-height: 1.3; text-align: center; }
+.sh-title { font-size: 2.2rem; margin: 0; }
+.sh-sub { font-size: 1.35rem; opacity: .8; }
+.doc-news { background: #e7e2d4; font-family: var(--serif); max-width: 820px; }
+.clip { padding-bottom: 1.2rem; border-bottom: 2px solid #1d1510; margin-bottom: 1.2rem; }
+.np-mast { font-weight: 700; font-size: 2.2rem; text-align: center; margin: 0; border-bottom: 3px double #1d1510; }
+.np-date { font-style: italic; text-align: center; font-size: 1rem; }
+.np-head { font-size: 2rem; margin: .6rem 0 .3rem; }
+.np-deck { font-style: italic; font-size: 1.2rem; }
+.np-cols { columns: 2 260px; column-gap: 1.6rem; font-size: 1.05rem; text-align: justify; hyphens: auto; }
+.clip-small { border-bottom: 0; margin: 0; max-width: 460px; }
+.np-head-sm { font-size: 1.4rem; margin: .3rem 0; }
+
+/* Dark UI documents */
+.doc-hints, .doc-howto, .confirm { max-width: 640px; margin: 0 auto; color: var(--ivory); }
+.doc-hints h3, .doc-howto h3, .confirm h3 { font-family: var(--display); font-weight: 400; font-size: 1.8rem; color: var(--brass-hi); margin-bottom: .8rem; }
+.hint-list { padding: 0; list-style: none; display: grid; gap: .7rem; }
+.hint { padding: .9rem 1.1rem; border-radius: 10px; border: 1px solid rgba(201, 162, 39, .35); background: rgba(10, 2, 6, .45); }
+.hint.is-open { border-color: var(--brass); }
+.hint.is-locked { color: rgba(239, 230, 210, .4); }
+.hint-answer { margin-top: 1rem; padding: 1rem 1.2rem; border-radius: 10px; background: #f3ecdc; color: var(--ink); }
+.confirm-actions, .menu-list { display: flex; flex-wrap: wrap; gap: .8rem; margin-top: 1.2rem; }
+.menu-list { flex-direction: column; align-items: stretch; }
+
+/* Suspects board and notebook */
+.board { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 1.3rem; }
+.sus { position: relative; display: grid; grid-template-columns: 100px 1fr; gap: 1rem; padding: 1rem; border-radius: 14px; background: rgba(10, 2, 6, .55); border: 1.5px solid rgba(201, 162, 39, .35); overflow: hidden; }
+.sus h3 { font-size: 1.3rem; color: var(--brass-hi); }
+.sus p { margin: .1rem 0 .6rem; font-style: italic; color: rgba(239, 230, 210, .8); }
+.sus-actions { display: flex; gap: .4rem; flex-wrap: wrap; margin-bottom: .6rem; }
+.sus-actions .btn.is-on { background: var(--brass); color: #241405; }
+.sus.is-suspect { border-color: #e0445f; box-shadow: 0 0 0 2px rgba(224, 68, 95, .35), 0 0 30px rgba(224, 68, 95, .25); }
+.sus.is-cleared .portrait { filter: grayscale(1) brightness(.6); }
+.sus-stamp { position: absolute; right: .6rem; top: 1.2rem; transform: rotate(12deg); border: 3px solid rgba(124, 255, 178, .7); color: rgba(124, 255, 178, .85); padding: 0 .6rem; border-radius: 6px; font-family: var(--type); pointer-events: none; }
+.notes-wrap { max-width: 860px; margin: 0 auto; }
+.notes-wrap h2 { font-family: var(--display); font-weight: 400; color: var(--brass-hi); font-size: 1.8rem; margin-bottom: .4rem; }
+.notes-paper { width: 100%; min-height: 60vh; resize: vertical; padding: .6rem 1.2rem .6rem 3.2rem; border: 0; border-radius: 4px; font-family: var(--hand); font-size: 1.6rem; line-height: 36px; color: #2a2e6e; background: linear-gradient(90deg, transparent 2.3rem, rgba(179, 18, 60, .45) 2.3rem 2.4rem, transparent 2.4rem), repeating-linear-gradient(#f7f1df 0 35px, #c9d3dd 35px 36px); box-shadow: 0 18px 40px rgba(0, 0, 0, .45); }
+.notes-saved { font-style: italic; color: rgba(239, 230, 210, .7); min-height: 1.5em; }
+
+/* Accusation */
+.screen-accuse { min-height: 100vh; padding: clamp(1.5rem, 4vw, 3rem) 1rem 7rem; }
+.accuse { width: min(1000px, 100%); margin: 0 auto; }
+.accuse > h2 { font-family: var(--display); font-weight: 400; font-size: clamp(2rem, 5vw, 3rem); color: var(--brass-hi); text-align: center; }
+.accuse-lede { text-align: center; font-style: italic; max-width: 52ch; margin: .4rem auto 2rem; }
+.q { border: 0; margin: 0 0 2.2rem; padding: 0; }
+.q legend { font-size: 1.5rem; font-weight: 700; color: var(--brass-hi); margin-bottom: .9rem; }
+.opts { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: .7rem; }
+.q-who .opts { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); }
+.opt { position: relative; display: flex; align-items: center; gap: .7rem; padding: .9rem 1rem; border-radius: 12px; cursor: pointer; background: rgba(10, 2, 6, .5); border: 1.5px solid rgba(201, 162, 39, .3); transition: border-color .2s, background .2s; }
+.opt input { position: absolute; opacity: 0; pointer-events: none; }
+.opt-sus { flex-direction: column; text-align: center; font-weight: 700; }
+.opt-sus .portrait { width: 100px; }
+.opt:hover { border-color: rgba(201, 162, 39, .7); }
+.opt:has(input:focus-visible) { outline: 3px solid var(--brass-hi); outline-offset: 2px; }
+.opt.is-picked { border-color: var(--brass-hi); background: rgba(201, 162, 39, .18); box-shadow: 0 0 0 1px var(--brass-hi); }
+.accuse-msg { min-height: 1.5em; text-align: center; color: #ff9aa9; font-weight: 700; }
+.accuse-actions { display: flex; justify-content: center; gap: .8rem; flex-wrap: wrap; }
+
+/* Reveal */
+.screen-reveal { min-height: 100vh; padding: clamp(1.5rem, 4vw, 3rem) 1rem 7rem; background: radial-gradient(60% 50% at 50% 30%, rgba(240, 215, 122, .16), transparent 70%); }
+.reveal-stage { width: min(820px, 100%); margin: 0 auto; text-align: center; }
+.rv-line { font-size: clamp(1.3rem, 3vw, 1.8rem); font-style: italic; opacity: 0; transform: translateY(10px); transition: opacity .8s, transform .8s; }
+.rv-1 { opacity: 1; transform: none; }
+.step-2 .rv-2 { opacity: 1; transform: none; }
+.rv-card { width: 250px; height: 340px; margin: 1.4rem auto 2rem; perspective: 1200px; }
+.rv-flip { position: relative; width: 100%; height: 100%; transform-style: preserve-3d; transition: transform 1.1s cubic-bezier(.3, .1, .2, 1); }
+.step-3 .rv-flip { transform: rotateY(180deg); }
+.rv-face { position: absolute; inset: 0; border-radius: 16px; backface-visibility: hidden; -webkit-backface-visibility: hidden; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+.rv-front { background: repeating-linear-gradient(45deg, #6b1026 0 8px, #841a33 8px 16px); border: 8px solid #f4efe3; box-shadow: 0 30px 60px rgba(0, 0, 0, .6); }
+.rv-crown { width: 90px; height: 68px; fill: var(--brass-hi); }
+.rv-back { transform: rotateY(180deg); background: #f4efe3; color: var(--ink); padding: 1rem; box-shadow: 0 30px 60px rgba(0, 0, 0, .6), 0 0 80px rgba(240, 215, 122, .35); }
+.rv-back h2 { font-family: var(--display); font-weight: 400; font-size: 1.6rem; margin-top: .4rem; }
+.rv-portrait { width: 190px; }
+.rv-portrait .p-mask { transform-box: fill-box; transform-origin: center; transition: transform 1.2s cubic-bezier(.5, 0, .3, 1), opacity 1.2s; }
+.step-4 .rv-portrait .p-mask { transform: translate(40px, -70px) rotate(24deg); opacity: 0; }
+.rv-result { opacity: 0; transition: opacity .8s; }
+.is-done .rv-result { opacity: 1; }
+.rv-result h3 { font-family: var(--display); font-weight: 400; font-size: clamp(1.8rem, 4.5vw, 2.6rem); color: var(--brass-hi); margin: 1rem 0 .5rem; }
+.rv-verdict { font-size: 1.2rem; max-width: 52ch; margin: 0 auto 1.4rem; }
+.stamp-big { position: relative; top: auto; right: auto; display: inline-block; font-size: 1.6rem; border-color: rgba(224, 68, 95, .9); color: rgba(255, 140, 160, .95); transform: rotate(-6deg); }
+.is-done .stamp-big { animation: stampIn .5s cubic-bezier(.3, 1.6, .5, 1) both; }
+@keyframes stampIn { from { opacity: 0; transform: rotate(-6deg) scale(2.2); } }
+.verdicts { list-style: none; padding: 0; margin: 0 auto 1.2rem; max-width: 640px; text-align: left; display: grid; gap: .6rem; }
+.verdicts li { padding: .8rem 1rem; border-radius: 10px; background: rgba(10, 2, 6, .5); border-left: 5px solid; display: grid; gap: .15rem; }
+.verdicts .is-ok { border-color: #5fd49a; }
+.verdicts .is-bad { border-color: #e0445f; }
+.v-q { font-weight: 700; color: var(--brass-hi); }
+.v-c { font-style: italic; }
+.rv-meta { font-style: italic; color: rgba(239, 230, 210, .75); }
+.rv-actions { display: flex; justify-content: center; gap: .8rem; flex-wrap: wrap; }
+.booklet { width: min(820px, 100%); margin: 3rem auto 0; scroll-margin-top: 1rem; }
+.booklet-page { background: var(--paper); color: var(--ink); padding: clamp(1.4rem, 5vw, 3rem); border-radius: 4px; box-shadow: 0 20px 50px rgba(0, 0, 0, .55); font-size: 1.15rem; animation: sheetIn .45s both; }
+.booklet-page h2 { font-family: var(--display); font-weight: 400; font-size: clamp(1.6rem, 4vw, 2.3rem); margin-bottom: 1rem; }
+.booklet-page h3 { font-size: 1.3rem; margin: 1.4rem 0 .5rem; }
+.bk-count { font-family: var(--type); font-size: .95rem; color: #6b5a48; }
+.booklet-page ul, .booklet-page ol { padding-left: 1.4rem; }
+.booklet-page li { margin-bottom: .45rem; }
+.bk-nav { display: flex; justify-content: space-between; gap: .8rem; flex-wrap: wrap; margin-top: 2rem; }
+.bk-nav .btn-ghost { color: var(--ink); border-color: var(--ink); }
+
+/* Toast */
+.toast { position: fixed; left: 50%; bottom: 1.4rem; z-index: 60; transform: translate(-50%, 250%); opacity: 0; padding: .7rem 1.4rem; border-radius: 999px; background: #f3ecdc; color: var(--ink); font-weight: 700; box-shadow: 0 12px 30px rgba(0, 0, 0, .5); transition: transform .35s cubic-bezier(.2, .8, .2, 1), opacity .35s; pointer-events: none; }
+.toast.is-on { transform: translate(-50%, 0); opacity: 1; }
+
+/* Small screens */
+@media (max-width: 820px) {
+  body { font-size: 18px; }
+  .setup { grid-template-columns: 1fr; }
+  .topbar { grid-template-columns: 1fr auto; }
+  .pips { grid-column: 1 / -1; grid-row: 2; justify-content: center; }
+  .brand-name { font-size: 1.05rem; }
+  #btn-accuse { display: none; }
+  .lock { grid-template-columns: 1fr; justify-items: center; text-align: center; }
+  .lock-copy p { margin-left: auto; margin-right: auto; }
+  .call-form { justify-content: center; }
+  .ev-grid { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 1rem; }
+  .ev { min-height: 190px; }
+  .modal { padding: 0; }
+  .modal-sheet { max-height: 100vh; height: 100%; border-radius: 0; }
+  .dos-card, .dos-one { grid-template-columns: 84px 1fr; }
+  .drinks { grid-template-columns: 1fr; }
+  .title-wheel { right: -40vmin; bottom: -30vmin; opacity: .35; }
+}
+@media (max-width: 480px) {
+  .tabs { gap: .25rem; }
+  .tab { padding: .4rem .8rem; font-size: .98rem; }
+  .sus { grid-template-columns: 80px 1fr; }
+  .clock { display: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+  .roulette-wheel, .roulette-ball { animation: none; }
+}
+
+</style>
+</head>
+<body>
+<main>
+  <section id="screen-title" class="screen screen-title" aria-labelledby="title-h">
+    <div class="title-wheel" id="title-wheel" aria-hidden="true"></div>
+    <div class="title-card">
+      <div class="marquee">
+        <p class="title-kicker">A murder mystery for two detectives</p>
+        <h1 id="title-h"><span>Death at the</span>Velvet Crown</h1>
+        <p class="tagline">Three hundred guests in masks. One dead casino king. Six people had a reason, and before dawn you will name the one who did it.</p>
+        <div class="title-actions">
+          <button type="button" class="btn btn-gold" id="btn-continue" hidden>Continue the case</button>
+          <button type="button" class="btn btn-gold" id="btn-new">Open the case file</button>
+          <button type="button" class="btn btn-ghost" id="btn-title-howto">How to play</button>
+        </div>
+      </div>
+      <p class="title-foot">About 90 to 120 minutes. Best on a laptop or tablet you can both see. Progress saves in this browser.</p>
+    </div>
+  </section>
+
+  <section id="screen-setup" class="screen screen-setup" hidden aria-labelledby="setup-h">
+    <div class="setup">
+      <form id="setup-form" class="setup-main" autocomplete="off">
+        <div id="setup-crown" class="setup-crown" aria-hidden="true"></div>
+        <h2 id="setup-h">Who is on the case tonight?</h2>
+        <p class="setup-lede">Chief Inspector Duret is calling in two detectives she trusts. Put your names on the file so she knows who she&rsquo;s writing to.</p>
+        <label class="field"><span>First detective</span><input id="name1" maxlength="24" placeholder="Your name"></label>
+        <label class="field"><span>Second detective</span><input id="name2" maxlength="24" placeholder="Your partner&rsquo;s name"></label>
+        <div class="setup-actions">
+          <button type="submit" class="btn btn-gold">Open envelope A</button>
+          <button type="button" class="btn btn-ghost" id="btn-setup-back">Back</button>
+        </div>
+      </form>
+      <aside class="evening" aria-labelledby="evening-h">
+        <h3 id="evening-h">Set the scene</h3>
+        <p>Dim the lights, turn your phones face down and switch on the music with the note button in the corner. Everything you need is on this screen, though a pen and paper are nice for scribbling theories.</p>
+        <p>Take turns reading the documents aloud. The best clues are the ones only one of you notices.</p>
+        <div class="drinks">
+          <div class="drink"><h4>The Last Hand</h4><p>Cognac, a splash of sweet vermouth and a twist of orange peel, stirred over one big ice cube.</p><p class="drink-note">Victor&rsquo;s nightly glass.</p></div>
+          <div class="drink"><h4>Midnight Blue</h4><p>Tonic, a squeeze of lime and a few crushed blueberries. Add gin if you like.</p><p class="drink-note">Named after Celeste&rsquo;s set.</p></div>
+        </div>
+      </aside>
+    </div>
+  </section>
+
+  <section id="screen-game" class="screen screen-game" hidden aria-label="The case file">
+    <header class="topbar">
+      <div class="brand">
+        <svg class="crown-mark" viewBox="0 0 120 90" aria-hidden="true"><use href="#crown"/></svg>
+        <div class="brand-text"><p class="brand-name">The Velvet Crown</p><p class="brand-sub" id="names-line">Case 1114</p></div>
+      </div>
+      <div class="pips" id="pips" aria-label="Envelopes"></div>
+      <div class="top-right">
+        <span class="clock" id="clock" title="Time on the case">0:00</span>
+        <button type="button" class="btn btn-small btn-gold" id="btn-accuse" hidden>Make the accusation</button>
+        <button type="button" class="icon-btn" id="btn-menu" aria-label="Menu"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
+      </div>
+    </header>
+    <nav class="tabs" role="tablist" aria-label="Sections">
+      <button type="button" class="tab" role="tab" data-tab="file" aria-selected="true">Case file</button>
+      <button type="button" class="tab" role="tab" data-tab="suspects" aria-selected="false">Suspects</button>
+      <button type="button" class="tab" role="tab" data-tab="notes" aria-selected="false">Notebook</button>
+    </nav>
+    <div class="table">
+      <div class="panel" data-panel="file" role="tabpanel"><div id="file"></div></div>
+      <div class="panel" data-panel="suspects" role="tabpanel" hidden><div class="board" id="board"></div></div>
+      <div class="panel" data-panel="notes" role="tabpanel" hidden>
+        <div class="notes-wrap">
+          <h2>Your notebook</h2>
+          <label for="notes" class="sr-only">Shared notes</label>
+          <textarea id="notes" class="notes-paper" placeholder="Theories, times, who lied about what&hellip;"></textarea>
+          <p class="notes-saved" id="notes-saved" aria-live="polite"></p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="screen-accuse" class="screen screen-accuse" hidden aria-labelledby="accuse-h">
+    <div class="accuse">
+      <h2 id="accuse-h">Name the killer</h2>
+      <p class="accuse-lede">Talk it through before you choose. Duret will only hear one accusation.</p>
+      <form id="accuse-form"></form>
+    </div>
+  </section>
+
+  <section id="screen-reveal" class="screen screen-reveal" hidden aria-label="The solution">
+    <div id="reveal-stage" class="reveal-stage" aria-live="polite"></div>
+    <div id="booklet" class="booklet" hidden></div>
+  </section>
+</main>
+
+<div class="modal" id="modal" hidden role="dialog" aria-modal="true" aria-label="Document">
+  <div class="modal-backdrop" data-close></div>
+  <div class="modal-sheet" id="modal-sheet">
+    <div class="modal-bar"><button type="button" class="icon-btn" id="modal-close" data-close aria-label="Close"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg></button></div>
+    <div id="modal-body"></div>
+    <nav class="modal-nav" id="modal-nav" aria-label="Browse evidence"></nav>
+  </div>
+</div>
+
+<div class="sound-dock">
+  <button type="button" class="dock-btn" id="btn-music" aria-pressed="false" aria-label="Music"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l11-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="17" cy="16" r="3"/></svg></button>
+  <button type="button" class="dock-btn" id="btn-sfx" aria-pressed="true" aria-label="Sound effects"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 6 9H3v6h3l5 4z"/><path class="on-only" d="M15.5 8.5a5 5 0 0 1 0 7M18.5 5.5a9 9 0 0 1 0 13"/></svg></button>
+</div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<noscript><p style="padding:2rem;text-align:center">This game needs JavaScript to run.</p></noscript>
+
+<script>
+/* Velvet Crown: shared art. Every picture in the game is SVG drawn in code. */
+(function () {
+  'use strict';
+  var Art = (window.Art = {});
+  var RED = '#a3122f', INK = '#1b1411';
+
+  var SPRITE = `
+<svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" style="position:absolute;width:0;height:0;overflow:hidden"><defs>
+<symbol id="suit-H" viewBox="0 0 100 100"><path d="M50 90C22 66 5 48 5 29 5 15 16 5 29 5c9 0 16 5 21 13C55 10 62 5 71 5c13 0 24 10 24 24 0 19-17 37-45 61z"/></symbol>
+<symbol id="suit-D" viewBox="0 0 100 100"><path d="M50 3 86 50 50 97 14 50z"/></symbol>
+<symbol id="suit-S" viewBox="0 0 100 100"><path d="M50 4C62 24 94 40 94 62c0 14-10 22-22 22-8 0-15-4-19-10 1 10 5 17 13 22H34c8-5 12-12 13-22-4 6-11 10-19 10C16 84 6 76 6 62 6 40 38 24 50 4z"/></symbol>
+<symbol id="suit-C" viewBox="0 0 100 100"><circle cx="50" cy="27" r="21"/><circle cx="27" cy="58" r="21"/><circle cx="73" cy="58" r="21"/><path d="M45 50h10c0 22 4 34 14 46H31c10-12 14-24 14-46z"/></symbol>
+<symbol id="crown" viewBox="0 0 120 90"><path d="M8 70 16 24 38 50 60 12 82 50 104 24 112 70z"/><rect x="8" y="75" width="104" height="11" rx="2"/><circle cx="16" cy="18" r="6"/><circle cx="60" cy="7" r="7"/><circle cx="104" cy="18" r="6"/></symbol>
+<symbol id="crest" viewBox="0 0 100 110"><path d="M50 4 92 18v34c0 28-18 46-42 54C26 98 8 80 8 52V18z" fill="none" stroke="currentColor" stroke-width="6"/><path d="M50 26l7 15 16 2-12 11 3 16-14-8-14 8 3-16-12-11 16-2z"/></symbol>
+<linearGradient id="g-wood" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#3c2012"/><stop offset=".45" stop-color="#4d2a17"/><stop offset="1" stop-color="#26130a"/></linearGradient>
+<radialGradient id="g-vignette" cx=".5" cy=".45" r=".78"><stop offset=".55" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".7"/></radialGradient>
+<radialGradient id="g-flash" cx=".5" cy=".4" r=".5"><stop offset="0" stop-color="#fff6dc" stop-opacity=".16"/><stop offset="1" stop-color="#fff6dc" stop-opacity="0"/></radialGradient>
+<pattern id="p-cardback" width="8" height="8" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="8" height="8" fill="#6b1026"/><rect width="4" height="4" fill="#841a33"/></pattern>
+<linearGradient id="g-old" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#e4cf98"/><stop offset=".6" stop-color="#d4b675"/><stop offset="1" stop-color="#bb9856"/></linearGradient>
+<radialGradient id="g-amber" cx=".38" cy=".36" r=".72"><stop offset="0" stop-color="#f0b454"/><stop offset=".6" stop-color="#b8661c"/><stop offset="1" stop-color="#6b300a"/></radialGradient>
+<linearGradient id="g-brass" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f6df91"/><stop offset=".5" stop-color="#bf9725"/><stop offset="1" stop-color="#7a5d10"/></linearGradient>
+<linearGradient id="g-silver" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f4f4f2"/><stop offset=".5" stop-color="#a9aaa8"/><stop offset="1" stop-color="#5f605e"/></linearGradient>
+<linearGradient id="g-lamp" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3fa06d"/><stop offset=".5" stop-color="#17643e"/><stop offset="1" stop-color="#0b3a22"/></linearGradient>
+<radialGradient id="g-crystal" cx=".4" cy=".35" r=".7"><stop offset="0" stop-color="#ffffff" stop-opacity=".55"/><stop offset=".7" stop-color="#bfc6c9" stop-opacity=".25"/><stop offset="1" stop-color="#8f989c" stop-opacity=".45"/></radialGradient>
+<radialGradient id="g-cone" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#8a6420"/><stop offset=".55" stop-color="#4a2c10"/><stop offset="1" stop-color="#2a170a"/></radialGradient>
+<pattern id="p-scan" width="4" height="4" patternUnits="userSpaceOnUse"><rect width="4" height="2" fill="#000" opacity=".28"/></pattern>
+<filter id="f-grain" x="0" y="0" width="100%" height="100%"><feTurbulence type="fractalNoise" baseFrequency=".85" numOctaves="2" stitchTiles="stitch"/><feColorMatrix values="0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 .5 0"/></filter>
+<radialGradient id="g-bg-isabella" cx=".5" cy=".35" r=".8"><stop offset="0" stop-color="#1e7a5c"/><stop offset="1" stop-color="#062a20"/></radialGradient>
+<radialGradient id="g-bg-marco" cx=".5" cy=".35" r=".8"><stop offset="0" stop-color="#5a5a66"/><stop offset="1" stop-color="#15151a"/></radialGradient>
+<radialGradient id="g-bg-kraus" cx=".5" cy=".35" r=".8"><stop offset="0" stop-color="#7a6034"/><stop offset="1" stop-color="#1d160c"/></radialGradient>
+<radialGradient id="g-bg-nikolai" cx=".5" cy=".35" r=".8"><stop offset="0" stop-color="#9a6d14"/><stop offset="1" stop-color="#2a1c04"/></radialGradient>
+<radialGradient id="g-bg-celeste" cx=".5" cy=".35" r=".8"><stop offset="0" stop-color="#5e3580"/><stop offset="1" stop-color="#160a20"/></radialGradient>
+<radialGradient id="g-bg-tobias" cx=".5" cy=".35" r=".8"><stop offset="0" stop-color="#a0183a"/><stop offset="1" stop-color="#2a0510"/></radialGradient>
+</defs></svg>`;
+
+  function inject() {
+    if (!document.getElementById('suit-H')) document.body.insertAdjacentHTML('afterbegin', SPRITE);
+  }
+  if (document.body) inject(); else document.addEventListener('DOMContentLoaded', inject);
+
+  var isRed = function (s) { return s === 'H' || s === 'D'; };
+
+  /* A playing card for use inside larger SVG scenes. */
+  Art.card = function (x, y, rank, suit, o) {
+    o = o || {};
+    var w = o.w || 62, h = o.h || 88, rot = o.rot || 0, old = !!o.old;
+    var t = 'translate(' + x + ' ' + y + ') rotate(' + rot + ')';
+    if (o.back) {
+      return '<g transform="' + t + '"><rect width="' + w + '" height="' + h + '" rx="6" fill="#f4efe3" stroke="#bdb6a6"/>' +
+        '<rect x="4" y="4" width="' + (w - 8) + '" height="' + (h - 8) + '" rx="4" fill="url(#p-cardback)" stroke="#c9a227" stroke-width=".8"/></g>';
+    }
+    var col = old ? (isRed(suit) ? '#8c2c18' : '#3a2614') : (isRed(suit) ? RED : INK);
+    var idx = '<text x="6" y="18" font-family="Georgia,serif" font-weight="700" font-size="16" fill="' + col + '">' + rank + '</text>' +
+      '<use href="#suit-' + suit + '" x="6" y="22" width="12" height="12" fill="' + col + '"/>';
+    return '<g transform="' + t + '">' +
+      '<rect width="' + w + '" height="' + h + '" rx="6" fill="' + (old ? 'url(#g-old)' : '#fbf9f3') + '" stroke="' + (old ? '#8f7240' : '#b9b2a2') + '" stroke-width="1.2"/>' +
+      idx + '<use href="#suit-' + suit + '" x="' + (w / 2 - 13) + '" y="' + (h / 2 - 11) + '" width="26" height="26" fill="' + col + '" opacity="' + (old ? .85 : 1) + '"/>' +
+      '<g transform="rotate(180 ' + w / 2 + ' ' + h / 2 + ')">' + idx + '</g>' +
+      (old ? '<path d="M5 ' + h * .72 + ' q' + w * .3 + ' -7 ' + w * .62 + ' 3 M' + w * .2 + ' 6 q6 10 2 22" stroke="#8f7240" fill="none" opacity=".45"/>' : '') +
+      '</g>';
+  };
+
+  /* Small card for HTML (cipher, shorthand card). */
+  Art.mini = function (rank, suit) {
+    return '<span class="mcard ' + (isRed(suit) ? 'is-red' : 'is-black') + '"><b>' + rank + '</b>' +
+      '<svg viewBox="0 0 100 100" aria-hidden="true"><use href="#suit-' + suit + '"/></svg></span>';
+  };
+  Art.suit = function (s) {
+    return '<svg class="suit ' + (isRed(s) ? 'is-red' : 'is-black') + '" viewBox="0 0 100 100" role="img" aria-label="' +
+      ({ H: 'hearts', S: 'spades', D: 'diamonds', C: 'clubs' })[s] + '"><use href="#suit-' + s + '"/></svg>';
+  };
+
+  var ICONS = {
+    letter: '<rect x="6" y="12" width="36" height="25" rx="2"/><path d="M6 14l18 14 18-14"/><circle cx="24" cy="31" r="4" fill="currentColor"/>',
+    report: '<rect x="10" y="5" width="28" height="38" rx="1"/><path d="M15 13h18M15 18h18M15 23h14M15 28h18"/><rect x="24" y="33" width="10" height="5"/>',
+    photo: '<rect x="8" y="6" width="32" height="36" rx="1"/><rect x="12" y="10" width="24" height="22"/><path d="M12 28l7-7 5 5 4-3 8 7"/><circle cx="30" cy="15" r="2"/>',
+    dossier: '<path d="M5 13h14l4 4h20v22H5z"/><path d="M14 9v10a3 3 0 0 0 6 0V8"/>',
+    programme: '<rect x="12" y="4" width="24" height="40" rx="1"/><rect x="15" y="7" width="18" height="34"/><path d="M18 21l2-6 4 4 4-4 2 6z" fill="currentColor"/>',
+    statements: '<path d="M6 10h36v20H22l-8 8v-8H6z"/><path d="M12 17h24M12 23h16"/>',
+    plan: '<rect x="5" y="8" width="38" height="32"/><path d="M5 22h16v18M21 8v8M29 22h14M29 22v10"/>',
+    notebook: '<rect x="11" y="5" width="26" height="38" rx="2" fill="currentColor" fill-opacity=".25"/><path d="M32 5v38M11 12h-3M11 20h-3M11 28h-3M11 36h-3"/>',
+    card: '<rect x="13" y="6" width="22" height="34" rx="3"/><path d="M24 17c-4-5-9-1-6 3l6 7 6-7c3-4-2-8-6-3z" fill="currentColor"/>',
+    log: '<rect x="7" y="6" width="34" height="36" rx="1"/><path d="M7 14h34M7 22h34M7 30h34M18 6v36"/>',
+    cctv: '<path d="M6 14l26-6 3 11-26 6z"/><path d="M20 23l2 9h-8M14 32v8M35 13l7 1"/>',
+    film: '<rect x="4" y="10" width="40" height="28"/><path d="M4 16h40M4 32h40"/><path d="M8 13h3M16 13h3M24 13h3M32 13h3M8 35h3M16 35h3M24 35h3M32 35h3"/>',
+    lab: '<path d="M19 5h10M21 5v14L10 38a3 3 0 0 0 3 4h22a3 3 0 0 0 3-4L27 19V5"/><path d="M15 30h18"/>',
+    news: '<rect x="5" y="8" width="38" height="32" rx="1"/><path d="M10 14h28M10 20h12M10 25h12M10 30h12M10 35h12"/><rect x="26" y="19" width="12" height="17"/>',
+    locker: '<rect x="13" y="4" width="22" height="40" rx="1"/><path d="M17 10h14M17 13h14M17 16h14M29 26v6"/>',
+    safe: '<rect x="7" y="7" width="34" height="34" rx="2"/><circle cx="24" cy="24" r="8"/><path d="M24 16v3M24 29v3M16 24h3M29 24h3"/>',
+    will: '<path d="M12 6h22v36H12z"/><path d="M16 13h14M16 18h14M16 23h10"/><path d="M26 32l4 4 8-9"/>'
+  };
+  Art.icon = function (kind) {
+    return '<svg class="icon" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' +
+      (ICONS[kind] || ICONS.report) + '</svg>';
+  };
+
+  /* European roulette wheel for the title screen. */
+  Art.roulette = function () {
+    var order = [0, 32, 15, 19, 4, 21, 2, 25, 17, 34, 6, 27, 13, 36, 11, 30, 8, 23, 10, 5, 24, 16, 33, 1, 20, 14, 31, 9, 22, 18, 29, 7, 28, 12, 35, 3, 26];
+    var reds = [1, 3, 5, 7, 9, 12, 14, 16, 18, 19, 21, 23, 25, 27, 30, 32, 34, 36];
+    var n = 37, R1 = 292, R0 = 214, s = '';
+    s += '<svg class="roulette" viewBox="-330 -330 660 660" aria-hidden="true">';
+    s += '<circle r="326" fill="#24110a"/><circle r="318" fill="none" stroke="url(#g-brass)" stroke-width="7"/>';
+    s += '<circle r="304" fill="#170b07"/>';
+    s += '<g class="roulette-wheel">';
+    for (var i = 0; i < n; i++) {
+      var a0 = (i - .5) * 2 * Math.PI / n - Math.PI / 2, a1 = (i + .5) * 2 * Math.PI / n - Math.PI / 2;
+      var p = function (r, a) { return (r * Math.cos(a)).toFixed(1) + ' ' + (r * Math.sin(a)).toFixed(1); };
+      var num = order[i];
+      var fill = num === 0 ? '#0f5a3a' : (reds.indexOf(num) > -1 ? '#8e1026' : '#120d0f');
+      s += '<path d="M' + p(R0, a0) + 'L' + p(R1, a0) + 'A' + R1 + ' ' + R1 + ' 0 0 1 ' + p(R1, a1) + 'L' + p(R0, a1) + 'A' + R0 + ' ' + R0 + ' 0 0 0 ' + p(R0, a0) + 'z" fill="' + fill + '" stroke="#c9a227" stroke-width="1.2"/>';
+      var deg = i * 360 / n;
+      s += '<text transform="rotate(' + deg.toFixed(2) + ') translate(0 -268)" text-anchor="middle" dominant-baseline="middle" font-family="Georgia,serif" font-size="19" fill="#efe6d2">' + num + '</text>';
+    }
+    s += '<circle r="' + R0 + '" fill="url(#g-cone)" stroke="#c9a227" stroke-width="2"/>';
+    s += '<circle r="150" fill="none" stroke="#c9a227" stroke-opacity=".35"/>';
+    for (var k = 0; k < 4; k++) {
+      s += '<g transform="rotate(' + (k * 90 + 45) + ')"><rect x="-6" y="-176" width="12" height="150" rx="6" fill="url(#g-brass)"/><circle cy="-180" r="11" fill="url(#g-brass)"/></g>';
+    }
+    s += '<circle r="34" fill="url(#g-brass)"/><circle r="12" fill="#5c430c"/>';
+    s += '</g><g class="roulette-ball"><circle cy="-304" r="9" fill="#fbf7ec"/><circle cx="-3" cy="-307" r="3" fill="#fff"/></g>';
+    s += '</svg>';
+    return s;
+  };
+
+  Art.crownMark = function (cls) {
+    return '<svg class="' + (cls || 'crown-mark') + '" viewBox="0 0 120 90" aria-hidden="true"><use href="#crown"/></svg>';
+  };
+})();
+
+</script>
+<script>
+/* Velvet Crown: masked portraits of the six suspects. */
+(function () {
+  'use strict';
+  var Art = window.Art;
+  var SIL = '#1a0e10', HAIR = '#070304';
+
+  var BUST = {
+    isabella: '<path d="M30 240C36 200 66 186 100 184 134 186 164 200 170 240z" fill="' + SIL + '"/>' +
+      '<path d="M30 240C38 216 58 208 74 208 84 216 92 222 100 222 108 222 116 216 126 208 142 208 162 216 170 240z" fill="#0f5a43" stroke="#2a9a74" stroke-width="1.2"/>' +
+      '<circle cx="62" cy="134" r="3.5" fill="#d9f0e6"/><circle cx="138" cy="134" r="3.5" fill="#d9f0e6"/>',
+    marco: '<path d="M24 240C30 198 62 184 100 182 138 184 170 198 176 240z" fill="#0e0e12"/>' +
+      '<path d="M86 184 100 232 114 184z" fill="#e9e4d8"/><path d="M86 184 100 232 76 202zM114 184 100 232 124 202z" fill="#20202a"/>' +
+      '<path d="M88 188 100 194 112 188v12l-12-6-12 6z" fill="#050506"/>',
+    kraus: '<path d="M22 240C28 196 62 182 100 180 138 182 172 196 178 240z" fill="#241a12"/>' +
+      '<path d="M66 186C80 198 120 198 134 186L142 206C122 216 78 216 58 206z" fill="#3a2a1a"/>',
+    nikolai: '<path d="M14 240C22 194 60 180 100 178 140 180 178 194 186 240z" fill="#0b0b0e"/>' +
+      '<path d="M86 182 100 236 70 202zM114 182 100 236 130 202z" fill="#9c7a1c"/><path d="M90 184 100 226 110 184z" fill="#efe9da"/>' +
+      '<path d="M89 188 100 194 111 188v12l-11-6-11 6z" fill="#c9a227"/>',
+    celeste: '<path d="M30 240C36 200 66 186 100 184 134 186 164 200 170 240z" fill="' + SIL + '"/>' +
+      '<path d="M30 240C40 214 64 210 100 214 136 210 160 214 170 240z" fill="#0d0710" stroke="#7a4ea3" stroke-width="1.2"/>',
+    tobias: '<path d="M26 240C32 198 64 184 100 182 136 184 168 198 174 240z" fill="#e6e0d2"/>' +
+      '<path d="M52 240 72 194 100 222 128 194 148 240z" fill="#6a0f24" stroke="#3a0714" stroke-width="1.5"/>' +
+      '<circle cx="100" cy="230" r="2.6" fill="#c9a227"/><circle cx="100" cy="239" r="2.6" fill="#c9a227"/>' +
+      '<path d="M88 188 100 194 112 188v12l-12-6-12 6z" fill="#050506"/>'
+  };
+
+  var HAIRS = {
+    isabella: 'M62 118C56 76 76 58 100 58 126 58 146 76 140 118 146 150 150 176 160 194 140 190 130 172 131 148L132 116C124 96 76 96 68 116L69 148C70 172 60 190 40 194 50 176 54 150 62 118z',
+    marco: 'M63 104C62 74 80 60 100 60 122 60 139 74 137 104 131 88 118 80 100 80 82 80 69 88 63 104z',
+    kraus: '',
+    nikolai: 'M62 102C60 68 84 56 104 57 128 58 142 74 138 102 130 82 112 74 96 76 82 78 70 88 62 102z',
+    celeste: 'M58 126C52 78 78 58 100 58 124 58 150 78 142 126 142 138 138 144 130 146L131 112C120 92 80 92 69 112L70 146C62 144 58 138 58 126z',
+    tobias: 'M62 102C58 72 76 56 96 57L103 47 109 58 121 51 123 62C137 69 142 85 138 102 130 86 116 80 100 80 84 80 70 87 62 102z'
+  };
+
+  var holes = function (fill) {
+    return '<ellipse cx="84" cy="107" rx="7" ry="4" fill="' + fill + '"/><ellipse cx="116" cy="107" rx="7" ry="4" fill="' + fill + '"/>' +
+      '<circle cx="86" cy="106" r="1.3" fill="#efe6d2"/><circle cx="118" cy="106" r="1.3" fill="#efe6d2"/>';
+  };
+  var DOMINO = 'M60 104C70 94 90 96 100 102 110 96 130 94 140 104 138 116 124 122 112 118 106 116 102 112 100 112 98 112 94 116 88 118 76 122 62 116 60 104z';
+
+  function mane() {
+    var s = '';
+    for (var i = 0; i < 22; i++) {
+      var a = i / 22 * Math.PI * 2, r0 = 40, r1 = 62 + (i % 2 ? 7 : 0), cx = 100, cy = 106;
+      var pt = function (r, t) { return (cx + r * Math.cos(t)).toFixed(1) + ' ' + (cy + r * Math.sin(t)).toFixed(1); };
+      s += '<path d="M' + pt(r0, a - .13) + 'L' + pt(r1, a) + 'L' + pt(r0, a + .13) + 'z"/>';
+    }
+    return '<g fill="url(#g-brass)">' + s + '</g>';
+  }
+
+  var MASKS = {
+    isabella: '<path d="M100 110C90 92 66 88 58 100 52 112 64 124 84 121 93 120 98 116 100 110zM100 110C110 92 134 88 142 100 148 112 136 124 116 121 107 120 102 116 100 110z" fill="url(#g-silver)" stroke="#f1f1ee" stroke-width=".8"/>' +
+      '<path d="M98 100C96 90 90 86 85 84M102 100C104 90 110 86 115 84" stroke="#d8d8d4" stroke-width="1.4" fill="none"/>' + holes('#0b0607') + '<circle cx="100" cy="104" r="3.6" fill="#9fe3d0"/>',
+    marco: '<path d="' + DOMINO + '" fill="#0b0507" stroke="#c9a227" stroke-width="1.4"/>' + holes('#2a1a1d'),
+    kraus: '<ellipse cx="100" cy="70" rx="74" ry="12" fill="#0e0a08"/><path d="M70 70C70 34 130 34 130 70z" fill="#0e0a08"/><rect x="70" y="61" width="60" height="6" fill="#3a2a1a"/>' +
+      '<path d="M64 96C66 84 134 84 136 96L136 118C132 126 122 128 114 128L154 178 106 140C94 136 72 134 64 120z" fill="#e9dfc8" stroke="#8a7a5a" stroke-width="1.2"/>' +
+      '<circle cx="84" cy="106" r="9" fill="#22282c" stroke="url(#g-brass)" stroke-width="3"/><circle cx="116" cy="106" r="9" fill="#22282c" stroke="url(#g-brass)" stroke-width="3"/>' +
+      '<circle cx="81" cy="103" r="2" fill="#dfe8ea"/><circle cx="113" cy="103" r="2" fill="#dfe8ea"/>',
+    nikolai: '<path d="M60 100C68 84 132 84 140 100 142 116 130 126 118 124L100 138 82 124C70 126 58 116 60 100z" fill="url(#g-brass)" stroke="#7a5d10" stroke-width="1.2"/>' +
+      holes('#1a0e04') + '<path d="M94 118 100 126 106 118z" fill="#7a5d10"/><path d="M72 96C80 92 88 93 94 98M128 96C120 92 112 93 106 98" stroke="#7a5d10" fill="none"/>',
+    celeste: '<g fill="#1c0f24" stroke="#b38fd1" stroke-width=".8"><ellipse cx="136" cy="64" rx="5" ry="28" transform="rotate(12 136 64)"/><ellipse cx="146" cy="70" rx="6" ry="34" transform="rotate(28 146 70)"/><ellipse cx="156" cy="82" rx="5" ry="30" transform="rotate(48 156 82)"/></g>' +
+      '<path d="' + DOMINO + '" fill="#120a18" stroke="#b38fd1" stroke-width="1.4"/>' + holes('#2a1a30') +
+      '<circle cx="70" cy="106" r="1.1" fill="#e9d8ff"/><circle cx="130" cy="104" r="1.1" fill="#e9d8ff"/><circle cx="100" cy="106" r="1.1" fill="#e9d8ff"/>',
+    tobias: '<path d="' + DOMINO + '" fill="#0b0507" stroke="#c9a227" stroke-width="1.4"/>' + holes('#2a1a1d')
+  };
+
+  var EXTRA = {
+    isabella: '<path d="M91 142Q100 147 109 142 100 139 91 142z" fill="#7d1030"/>',
+    kraus: '<path d="M64 112C62 118 63 124 66 128M136 112C138 118 137 124 134 128" stroke="#9a9a9a" stroke-width="3" fill="none"/>',
+    marco: '<path d="M64 98C64 108 66 116 68 122M136 98C136 108 134 116 132 122" stroke="#8b8b8b" stroke-width="3" fill="none"/>',
+    celeste: '<path d="M90 142Q100 148 110 142 100 138 90 142z" fill="#a3122f"/>',
+    tobias: '<g transform="rotate(14 152 170)"><rect x="140" y="148" width="30" height="42" rx="3" fill="#fbf9f3" stroke="#b9b2a2"/><use href="#suit-S" x="147" y="160" width="16" height="16" fill="#1b1411"/></g>' +
+      '<ellipse cx="150" cy="190" rx="13" ry="8" fill="#e6e0d2" transform="rotate(-20 150 190)"/>'
+  };
+
+  Art.portrait = function (id, cls) {
+    var sun = '';
+    for (var a = 235; a <= 305; a += 7) {
+      var r = a * Math.PI / 180;
+      sun += '<path d="M100 236L' + (100 + 132 * Math.cos(r)).toFixed(1) + ' ' + (236 + 132 * Math.sin(r)).toFixed(1) + '"/>';
+    }
+    var face = '<path d="M86 150h28v36H86z" fill="' + SIL + '"/><ellipse cx="100" cy="110" rx="37" ry="46" fill="' + SIL + '"/>' +
+      '<g class="p-eyes"><ellipse cx="84" cy="108" rx="6" ry="2.8" fill="#efe6d2"/><ellipse cx="116" cy="108" rx="6" ry="2.8" fill="#efe6d2"/>' +
+      '<circle cx="85" cy="108" r="2.2" fill="#2a1410"/><circle cx="117" cy="108" r="2.2" fill="#2a1410"/>' +
+      '<path d="M76 99C82 96 88 96 92 99M108 99C112 96 118 96 124 99M92 140Q100 143 108 140" stroke="#c9a227" stroke-opacity=".7" stroke-width="1.4" fill="none"/></g>';
+    return '<svg class="' + (cls || 'portrait') + '" viewBox="0 0 200 240" aria-hidden="true">' +
+      '<path d="M8 240V102A92 92 0 0 1 192 102V240z" fill="url(#g-bg-' + id + ')"/>' +
+      '<g stroke="#f0d77a" stroke-opacity=".13" stroke-width="2">' + sun + '</g>' +
+      (id === 'nikolai' ? mane() : '') +
+      BUST[id] + face +
+      (HAIRS[id] ? '<path d="' + HAIRS[id] + '" fill="' + HAIR + '"/>' : '') +
+      '<path d="M130 84C142 100 142 126 128 150" stroke="#f0d77a" stroke-width="2" fill="none" opacity=".55"/>' +
+      (EXTRA[id] || '') +
+      '<g class="p-mask">' + MASKS[id] + '</g>' +
+      '<path d="M8 240V102A92 92 0 0 1 192 102V240" fill="none" stroke="#c9a227" stroke-width="3"/>' +
+      '<path d="M15 240V103A85 85 0 0 1 185 103V240" fill="none" stroke="#c9a227" stroke-opacity=".4"/>' +
+      '</svg>';
+  };
+})();
+
+</script>
+<script>
+/* Velvet Crown: the police photograph of Victor's desk. */
+(function () {
+  'use strict';
+  var Art = window.Art;
+
+  function marker(x, y, n) {
+    return '<g transform="translate(' + x + ' ' + y + ')"><path d="M0 34 14 0 28 34z" fill="#f2c230" stroke="#1b1411" stroke-width="1.5"/>' +
+      '<text x="14" y="29" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-weight="700" font-size="15" fill="#1b1411">' + n + '</text></g>';
+  }
+  function oct(r) {
+    var p = [];
+    for (var i = 0; i < 8; i++) { var a = Math.PI / 8 + i * Math.PI / 4; p.push((r * Math.cos(a)).toFixed(1) + ',' + (r * Math.sin(a)).toFixed(1)); }
+    return p.join(' ');
+  }
+
+  Art.deskScene = function () {
+    var c = Art.card, s = '';
+    s += '<svg class="scene" viewBox="0 0 1200 800" role="img" aria-label="Police photograph of Victor Valmont\'s desk, taken at 00:41">';
+    s += '<rect width="1200" height="800" fill="url(#g-wood)"/>';
+    for (var i = 0; i < 15; i++) {
+      var y = 20 + i * 54 + (i % 3) * 9;
+      s += '<path d="M0 ' + y + 'C300 ' + (y + 16) + ' 640 ' + (y - 18) + ' 1200 ' + (y + 8) + '" stroke="#1c0d06" stroke-width="' + (1 + i % 3) + '" fill="none" opacity=".32"/>';
+    }
+
+    /* The note under the blotter: only its top edge shows. */
+    s += '<g transform="rotate(-3 440 140)"><rect x="436" y="134" width="190" height="72" fill="#efe6d2"/>' +
+      '<text x="452" y="160" font-family="Caveat,cursive" font-size="21" fill="#2a1e5c">Nov. \u2014 My four</text></g>';
+
+    /* Hidden old card: 4 of clubs, under the corner of the blotter. */
+    s += c(200, 548, '4', 'C', { old: true, rot: -16 });
+
+    /* Blotter */
+    s += '<rect x="250" y="170" width="720" height="470" rx="10" fill="#15402f" stroke="#7a5d1a" stroke-width="4"/>';
+    s += '<rect x="264" y="184" width="692" height="442" rx="6" fill="none" stroke="#c9a227" stroke-opacity=".45" stroke-dasharray="2 5"/>';
+    s += '<path d="M250 170h70L250 240zM970 170h-70L970 240zM250 640h70L250 570zM970 640h-70L970 570z" fill="#3b1a10" opacity=".92"/>';
+
+    /* Solitaire in progress (item 1) */
+    s += c(292, 196, '', '', { back: true }) + c(296, 192, '', '', { back: true });
+    s += c(378, 194, '6', 'D');
+    for (var k = 0; k < 4; k++) {
+      s += '<rect x="' + (600 + k * 88) + '" y="194" width="62" height="88" rx="6" fill="none" stroke="#c9a227" stroke-opacity=".5" stroke-dasharray="4 4"/>';
+    }
+    s += c(600, 194, 'A', 'H') + c(688, 194, 'A', 'S');
+    var tops = [['K', 'S'], ['Q', 'D'], ['8', 'C'], ['J', 'H'], ['3', 'S'], ['10', 'D'], ['5', 'C']];
+    for (var col = 0; col < 7; col++) {
+      var x = 292 + col * 94, yy = 316;
+      for (var b = 0; b < col; b++) { s += c(x, yy, '', '', { back: true }); yy += 14; }
+      s += c(x, yy, tops[col][0], tops[col][1]);
+      if (col === 4) s += c(x, yy + 28, '2', 'H');
+    }
+
+    /* Decanter (item 3) and glass (item 2) */
+    s += '<g transform="translate(1070 150)"><polygon points="' + oct(74) + '" fill="#000" opacity=".25" transform="translate(6 8)"/>' +
+      '<polygon points="' + oct(72) + '" fill="url(#g-amber)" opacity=".88" stroke="#f6e6c0" stroke-opacity=".6" stroke-width="2"/>' +
+      '<polygon points="' + oct(48) + '" fill="none" stroke="#fff" stroke-opacity=".25"/>' +
+      '<circle r="20" fill="url(#g-crystal)" stroke="#fff" stroke-opacity=".6"/><path d="M-50-30-30-50" stroke="#fff" stroke-opacity=".5" stroke-width="4" stroke-linecap="round"/></g>';
+    s += '<g transform="translate(1065 330)"><circle r="62" fill="#2a1409"/><circle r="52" fill="url(#g-crystal)" stroke="#f5f1e6" stroke-width="3"/>' +
+      '<circle r="36" fill="url(#g-amber)" opacity=".9"/><ellipse cx="-14" cy="-16" rx="12" ry="6" fill="#fff" opacity=".35"/></g>';
+
+    /* Hidden old card: 7 of hearts, under the ashtray. */
+    s += c(985, 540, '7', 'H', { old: true, rot: 28 });
+    /* Ashtray with unlit cigar (item 4) */
+    s += '<g transform="translate(1060 610)"><circle r="80" fill="#000" opacity=".25" transform="translate(6 8)"/>' +
+      '<circle r="78" fill="url(#g-crystal)" stroke="#e9eef0" stroke-width="3"/><circle r="50" fill="#3a3a3a" opacity=".35"/>' +
+      '<g transform="rotate(-24)"><rect x="-86" y="-11" width="150" height="22" rx="11" fill="#6b3a1c"/><rect x="30" y="-11" width="14" height="22" fill="url(#g-brass)"/>' +
+      '<path d="M-80-6h120" stroke="#8a5530" stroke-opacity=".6"/></g></g>';
+
+    /* Banker's lamp (item 8) */
+    s += '<circle cx="650" cy="84" r="40" fill="url(#g-brass)" opacity=".9"/>' +
+      '<rect x="520" y="36" width="260" height="64" rx="32" fill="url(#g-lamp)" stroke="#0a2a18" stroke-width="2"/>' +
+      '<path d="M548 52h204" stroke="#bff0cf" stroke-opacity=".45" stroke-width="5" stroke-linecap="round"/>';
+
+    /* Framed wedding photograph (item 6), with hidden 2 of spades tucked in the corner. */
+    s += '<g transform="translate(40 40) rotate(-5)"><rect width="170" height="210" rx="4" fill="url(#g-silver)" stroke="#555"/>' +
+      '<rect x="16" y="16" width="138" height="178" fill="#b89b72"/>' +
+      '<circle cx="64" cy="80" r="14" fill="#3a2a1c"/><path d="M40 194C42 140 52 104 64 100 76 104 86 140 88 194z" fill="#3a2a1c"/>' +
+      '<path d="M86 194C88 150 96 110 106 104 116 110 126 150 132 194z" fill="#efe4cc"/><circle cx="106" cy="84" r="13" fill="#5a4330"/>' +
+      '<path d="M94 80C96 66 118 66 120 80L128 150 110 96z" fill="#f7efdf" opacity=".8"/>' +
+      '<rect x="16" y="16" width="138" height="178" fill="url(#g-vignette)"/></g>';
+    s += c(168, 20, '2', 'S', { old: true, rot: 24 });
+
+    /* Book (item 7), with hidden 9 of diamonds as a bookmark. */
+    s += c(92, 290, '9', 'D', { old: true, rot: -3 });
+    s += '<g transform="translate(40 330) rotate(3)"><rect width="160" height="240" rx="6" fill="#5a2415" stroke="#2a0e06" stroke-width="2"/>' +
+      '<rect x="12" y="12" width="136" height="216" rx="3" fill="none" stroke="#c9a227" stroke-opacity=".7"/>' +
+      '<text x="80" y="100" text-anchor="middle" font-family="Georgia,serif" font-style="italic" font-size="17" fill="#e8c872">The Gambler\'s</text>' +
+      '<text x="80" y="124" text-anchor="middle" font-family="Georgia,serif" font-style="italic" font-size="17" fill="#e8c872">Almanac</text>' +
+      '<use href="#crown" x="60" y="150" width="40" height="30" fill="#c9a227"/></g>';
+
+    /* Fountain pen (item 5) */
+    s += '<g transform="translate(700 704) rotate(-14)"><rect width="190" height="14" rx="7" fill="#0d0d0f"/>' +
+      '<rect x="146" width="22" height="14" fill="url(#g-brass)"/><path d="M190 2 214 7 190 12z" fill="url(#g-brass)"/></g>';
+
+    s += marker(262, 128, 1) + marker(990, 398, 2) + marker(985, 58, 3) + marker(958, 672, 4) +
+      marker(640, 690, 5) + marker(214, 262, 6) + marker(100, 592, 7) + marker(800, 54, 8);
+
+    s += '<rect width="1200" height="800" fill="url(#g-flash)"/><rect width="1200" height="800" fill="url(#g-vignette)" opacity=".5"/>';
+    s += '<rect y="764" width="1200" height="36" fill="#000" opacity=".62"/>' +
+      '<text x="20" y="788" font-family="Courier New,monospace" font-size="17" fill="#f2efe6">Case 1114   Photo 3   Crown Office desk   00:41</text>';
+    s += '</svg>';
+    return s;
+  };
+})();
+
+</script>
+<script>
+/* Velvet Crown: floor plan of the casino. */
+(function () {
+  'use strict';
+  var Art = window.Art;
+  var INK = '#2b2320', ROOM = '#f7f0e0';
+
+  function room(x, y, w, h, label, sub, fill) {
+    var s = '<rect x="' + x + '" y="' + y + '" width="' + w + '" height="' + h + '" fill="' + (fill || ROOM) + '" stroke="' + INK + '" stroke-width="3"/>';
+    if (label) s += '<text x="' + (x + w / 2) + '" y="' + (y + h / 2 + (sub ? -4 : 6)) + '" text-anchor="middle" class="pl-label">' + label + '</text>';
+    if (sub) s += '<text x="' + (x + w / 2) + '" y="' + (y + h / 2 + 16) + '" text-anchor="middle" class="pl-sub">' + sub + '</text>';
+    return s;
+  }
+  function gap(x, y, w, h) { return '<rect x="' + x + '" y="' + y + '" width="' + w + '" height="' + h + '" fill="' + ROOM + '"/>'; }
+  function cam(x, y, label, rot) {
+    return '<g transform="translate(' + x + ' ' + y + ') rotate(' + (rot || 0) + ')"><path d="M4 0 70 -24 70 24z" fill="#f2c230" opacity=".28"/>' +
+      '<rect x="-12" y="-7" width="18" height="14" rx="2" fill="' + INK + '"/><path d="M6-4 12-6v12L6 4z" fill="' + INK + '"/></g>' +
+      '<text x="' + (x + 2) + '" y="' + (y - 13) + '" class="pl-cam" text-anchor="middle">' + label + '</text>';
+  }
+
+  Art.floorPlan = function () {
+    var s = '<svg class="plan" viewBox="0 0 1000 660" role="img" aria-label="Floor plan of the Velvet Crown casino, ground floor and first floor">';
+    s += '<style>.pl-label{font:italic 600 19px "Cormorant Garamond",Georgia,serif;fill:' + INK + '}.pl-sub{font:13px "Cormorant Garamond",Georgia,serif;fill:#5a4a3c}.pl-cam{font:700 11px Arial,sans-serif;fill:#7a5d10}.pl-note{font:italic 14px "Cormorant Garamond",Georgia,serif;fill:#5a4a3c}</style>';
+    s += '<rect width="1000" height="660" fill="#efe6d2"/><g stroke="#ddd1b4">';
+    for (var gx = 0; gx <= 1000; gx += 20) s += '<path d="M' + gx + ' 0V660"/>';
+    for (var gy = 0; gy <= 660; gy += 20) s += '<path d="M0 ' + gy + 'H1000"/>';
+    s += '</g>';
+
+    /* Back of house */
+    s += room(40, 40, 120, 80, 'Dressing A', 'Mrs Valmont') + room(160, 40, 120, 80, 'Dressing B', 'Ms Moreau');
+    s += room(280, 40, 190, 80, '', '');
+    for (var l = 0; l < 10; l++) s += '<rect x="' + (292 + l * 17) + '" y="50" width="13" height="24" fill="#e2d6bb" stroke="' + INK + '"/>';
+    s += '<text x="375" y="104" text-anchor="middle" class="pl-label">Staff lockers</text>';
+    s += room(470, 40, 90, 80, '', '');
+    for (var st = 0; st < 9; st++) s += '<path d="M' + (478 + st * 9) + ' 46V88" stroke="' + INK + '" stroke-width="1.2"/>';
+    s += '<text x="515" y="104" text-anchor="middle" class="pl-sub">Private stairs</text><path d="M515 94V70m-6 8 6-8 6 8" stroke="#a3122f" stroke-width="2" fill="none"/>';
+    s += room(560, 40, 260, 80, 'Service and kitchen', '');
+    s += room(40, 120, 780, 40, '', '', '#ece2cb');
+    s += '<text x="300" y="146" text-anchor="middle" class="pl-sub">Staff corridor (no cameras)</text>';
+
+    /* Public floor */
+    s += room(40, 160, 430, 310, '', '');
+    s += '<rect x="44" y="164" width="86" height="302" fill="#e3d3b0"/><text transform="translate(92 315) rotate(-90)" text-anchor="middle" class="pl-label">Stage</text>';
+    for (var ry = 200; ry <= 440; ry += 30) for (var rx = 170; rx <= 440; rx += 30) s += '<circle cx="' + rx + '" cy="' + ry + '" r="3.2" fill="#b8a88a"/>';
+    s += '<rect x="230" y="296" width="180" height="40" fill="' + ROOM + '" opacity=".9"/><text x="320" y="323" text-anchor="middle" class="pl-label">Grand Salon</text>';
+    s += room(470, 160, 90, 310, '', '');
+    s += '<text transform="translate(520 315) rotate(-90)" text-anchor="middle" class="pl-sub">Hall</text>';
+    s += room(560, 160, 260, 190, '', '');
+    s += '<ellipse cx="690" cy="262" rx="72" ry="36" fill="#2f6b4f" stroke="' + INK + '" stroke-width="2"/>';
+    [[690, 214], [630, 226], [750, 226], [618, 282], [762, 282], [690, 310]].forEach(function (p, i) {
+      s += '<circle cx="' + p[0] + '" cy="' + p[1] + '" r="9" fill="' + (i === 5 ? '#a3122f' : '#e2d6bb') + '" stroke="' + INK + '"/>';
+    });
+    s += '<text x="690" y="190" text-anchor="middle" class="pl-label">Salon Priv\u00e9</text><text x="690" y="336" text-anchor="middle" class="pl-sub">red seat: dealer</text>';
+    s += room(560, 350, 260, 120, 'The Cage', 'cashier and deck store');
+    s += room(40, 470, 260, 130, '', '');
+    s += '<path d="M70 500Q170 560 270 500" stroke="' + INK + '" stroke-width="10" fill="none" opacity=".75"/><text x="170" y="582" text-anchor="middle" class="pl-label">Le Tr\u00e8fle bar</text>';
+    s += room(300, 470, 260, 130, 'Entrance', 'and cloakroom');
+    s += room(560, 470, 260, 130, 'Gaming floor', 'roulette and blackjack');
+    s += '<rect x="820" y="160" width="130" height="310" fill="#e3e8d3" stroke="' + INK + '" stroke-width="2" stroke-dasharray="8 6"/>';
+    s += '<text x="885" y="300" text-anchor="middle" class="pl-label">Terrace</text><text x="885" y="320" text-anchor="middle" class="pl-sub">outside</text><text x="885" y="336" text-anchor="middle" class="pl-sub">no camera</text>';
+
+    /* Doors */
+    s += gap(495, 117, 40, 6) + gap(590, 157, 35, 6) + gap(817, 220, 6, 40) + gap(557, 262, 6, 36) + gap(60, 157, 36, 6) +
+      gap(467, 300, 6, 40) + gap(490, 467, 50, 6) + gap(400, 597, 60, 6) + gap(557, 395, 6, 30) + gap(200, 467, 40, 6) +
+      gap(557, 520, 6, 40) + gap(85, 117, 30, 6) + gap(205, 117, 30, 6) + gap(360, 117, 40, 6) + gap(680, 117, 40, 6);
+
+    /* Cameras */
+    s += cam(430, 588, 'Cam 01', -90) + cam(572, 410, 'Cam 02', 180) + cam(700, 588, 'Cam 03', -90);
+
+    /* First floor inset */
+    s += '<rect x="836" y="486" width="154" height="164" fill="#f3ead6" stroke="' + INK + '" stroke-width="2"/>';
+    s += '<text x="913" y="506" text-anchor="middle" class="pl-label">First floor</text>';
+    s += room(846, 514, 134, 82, '', '');
+    s += '<text x="905" y="556" text-anchor="middle" class="pl-label">Crown Office</text>';
+    s += '<rect x="956" y="520" width="18" height="18" fill="#bfb49a" stroke="' + INK + '"/><circle cx="965" cy="529" r="5" fill="none" stroke="' + INK + '"/>';
+    s += '<text x="965" y="550" text-anchor="middle" class="pl-sub">safe</text>';
+    s += room(846, 596, 134, 46, '', '');
+    for (var fs = 0; fs < 6; fs++) s += '<path d="M' + (930 + fs * 8) + ' 600V638" stroke="' + INK + '" stroke-width="1"/>';
+    s += '<text x="890" y="626" text-anchor="middle" class="pl-sub">Landing</text>' + gap(876, 593, 30, 6);
+    s += cam(862, 612, 'Cam 04', -60);
+
+    /* Legend */
+    s += '<g transform="translate(40 626)"><rect x="0" y="-8" width="16" height="12" rx="2" fill="' + INK + '"/><text x="24" y="3" class="pl-note">CCTV camera</text>' +
+      '<rect x="130" y="-10" width="30" height="16" fill="#e3e8d3" stroke="' + INK + '" stroke-dasharray="5 4"/><text x="168" y="3" class="pl-note">outside</text>' +
+      '<path d="M260 0h100M260-5v10M360-5v10" stroke="' + INK + '" stroke-width="2"/><text x="370" y="4" class="pl-note">10 metres</text></g>';
+    s += '</svg>';
+    return s;
+  };
+})();
+
+</script>
+<script>
+/* Velvet Crown: camera 04 still and the gala photographer's contact sheet. */
+(function () {
+  'use strict';
+  var Art = window.Art;
+  var MONO = 'font-family="Courier New,monospace"';
+
+  Art.cctv = function () {
+    var s = '<svg class="cctv" viewBox="0 0 800 500" role="img" aria-label="Camera 04 still at 23:11:34: a masked figure in a tuxedo holds a keycard to the Crown Office door">';
+    s += '<rect width="800" height="500" fill="#18211d"/>';
+    s += '<path d="M0 500H800L560 360H240z" fill="#2a3530"/><path d="M0 0 240 60V360L0 500z" fill="#202a26"/><path d="M800 0 560 60V360L800 500z" fill="#243029"/>';
+    s += '<rect x="240" y="60" width="320" height="300" fill="#2e3a35"/>';
+    for (var i = -4; i <= 4; i++) s += '<path d="M' + (400 + i * 60) + ' 360L' + (400 + i * 210) + ' 500" stroke="#1d2622" stroke-width="2"/>';
+    s += '<path d="M150 420H650M80 460H720" stroke="#1d2622" stroke-width="2"/>';
+    /* Door, plaque, card reader */
+    s += '<rect x="330" y="110" width="140" height="250" fill="#171e1b" stroke="#5b6a62" stroke-width="4"/>';
+    s += '<rect x="346" y="126" width="108" height="100" fill="none" stroke="#3c4842" stroke-width="2"/><rect x="346" y="240" width="108" height="100" fill="none" stroke="#3c4842" stroke-width="2"/>';
+    s += '<circle cx="452" cy="244" r="5" fill="#8a9690"/><rect x="372" y="88" width="56" height="13" fill="#6f6a4f"/>';
+    s += '<rect x="304" y="222" width="14" height="24" rx="2" fill="#0f1412" stroke="#6b7a72"/><circle cx="311" cy="228" r="2.6" fill="#ff3b3b"/>';
+    /* Height strip on the door frame: 1 m = 119 px, floor at y 360 */
+    s += '<rect x="474" y="110" width="9" height="250" fill="#d8d2b8" opacity=".85"/>';
+    for (var h = 10; h <= 21; h++) {
+      var y = (360 - h / 10 * 119).toFixed(1), major = h >= 16 && h <= 20;
+      s += '<path d="M474 ' + y + 'H' + (major ? 486 : 481) + '" stroke="#1b1411" stroke-width="1.4"/>';
+      if (major) s += '<text x="489" y="' + (+y + 4) + '" ' + MONO + ' font-size="11" fill="#e0dccb">' + (h / 10).toFixed(2) + '</text>';
+    }
+    /* The figure, seen from behind */
+    s += '<g fill="#0a0c0d">';
+    s += '<path d="M384 262 380 358H398L402 270H408L412 358H430L426 262z" fill="#060708"/>';
+    s += '<path d="M370 186C372 180 384 176 404 176 424 176 436 180 438 186L436 270H372z"/>';
+    s += '<path d="M376 262 380 298 398 282H410L428 298 432 262z"/>';
+    s += '<rect x="398" y="170" width="12" height="10"/><ellipse cx="404" cy="158" rx="15" ry="17" fill="#060708"/>';
+    s += '<path d="M374 190C360 200 340 214 322 228L318 238C338 226 358 214 378 206z"/>';
+    s += '<path d="M436 190C442 214 442 240 438 262H430C432 240 432 214 430 196z"/></g>';
+    s += '<path d="M416 150C425 154 425 166 416 173 420 164 420 157 416 150z" fill="#e8ece6"/>';
+    s += '<path d="M392 156C384 162 382 172 386 180" stroke="#141719" stroke-width="3" fill="none"/>';
+    s += '<circle cx="318" cy="233" r="7" fill="#040505"/><rect x="306" y="225" width="12" height="17" fill="#f1f2ec" transform="rotate(-10 312 233)"/>';
+    /* Police annotation */
+    s += '<path d="M404 142H474" stroke="#f2c230" stroke-width="1.5" stroke-dasharray="4 3"/><path d="M488 142H582" stroke="#f2c230" stroke-dasharray="2 3"/>';
+    s += '<rect x="582" y="128" width="158" height="27" fill="#000" opacity=".6"/><text x="592" y="147" ' + MONO + ' font-size="15" fill="#f2c230">1.83 m \u00b1 0.02</text>';
+    /* Video texture and overlays */
+    s += '<rect width="800" height="500" fill="url(#p-scan)"/><rect width="800" height="500" filter="url(#f-grain)" opacity=".22"/>';
+    s += '<rect width="800" height="500" fill="url(#g-vignette)"/>';
+    s += '<text x="18" y="30" ' + MONO + ' font-size="17" fill="#d9e4dc">CAM 04  STAIRCASE LANDING</text>';
+    s += '<text x="782" y="30" text-anchor="end" ' + MONO + ' font-size="17" fill="#d9e4dc">14/11  23:11:34</text>';
+    s += '<circle cx="24" cy="478" r="6" fill="#ff3b3b"/><text x="36" y="483" ' + MONO + ' font-size="14" fill="#d9e4dc">REC</text>';
+    s += '</svg>';
+    return s;
+  };
+
+  function singer(x, y, sc, gown, hair) {
+    var t = 'translate(' + x + ' ' + y + ') scale(' + sc + ')';
+    var hairPath = hair === 'long' ? '<path d="M-15 -8C-18-30 18-30 15-8 18 8 20 22 24 32 10 28 12 12 10 2L-10 2C-12 12-10 28-24 32-20 22-18 8-15-8z" fill="#0a0a0b"/>'
+      : '<path d="M-16 4C-20-26 20-26 16 4 14 8 10 8 10 2L-10 2C-10 8-14 8-16 4z" fill="#0a0a0b"/>';
+    return '<g transform="' + t + '"><circle r="13" fill="#6a6a6c"/>' + hairPath +
+      '<path d="M-7-2C-3-5 3-5 7-2" stroke="#e6e6e6" stroke-width="3" fill="none"/>' +
+      '<path d="M-10 14C-22 50-30 100-42 140H42C30 100 22 50 10 14z" fill="' + gown + '"/>' +
+      '<path d="M-10 22-26 60M10 22 20 40 8 44" stroke="#6a6a6c" stroke-width="5" fill="none" stroke-linecap="round"/></g>';
+  }
+  function scene(kind) {
+    var s = '<rect width="390" height="220" fill="#1d1d1f"/>';
+    if (kind === 'duet' || kind === 'bow') {
+      s += '<rect width="390" height="220" fill="#29292b"/>';
+      for (var f = 10; f < 390; f += 22) s += '<path d="M' + f + ' 0V160" stroke="#222224" stroke-width="6"/>';
+      s += '<rect y="160" width="390" height="60" fill="#3d3d3f"/>';
+      s += '<path d="M120 0 55 220H185zM270 0 205 220H335z" fill="#fff" opacity=".1"/>';
+      if (kind === 'duet') {
+        s += singer(120, 64, 1, '#8e8e90', 'long') + singer(270, 64, 1, '#0c0c0d', 'bob');
+        s += '<path d="M168 80V210M222 80V210" stroke="#bdbdbd" stroke-width="2"/><circle cx="168" cy="78" r="5" fill="#bdbdbd"/><circle cx="222" cy="78" r="5" fill="#bdbdbd"/>';
+      } else {
+        s += '<g transform="rotate(28 150 200)">' + singer(150, 90, .95, '#8e8e90', 'long') + '</g><g transform="rotate(28 250 200)">' + singer(250, 90, .95, '#0c0c0d', 'bob') + '</g>';
+        s += '<path d="M0 0H70C60 60 64 150 40 220H0zM390 0H320C330 60 326 150 350 220H390z" fill="#141415"/>';
+      }
+    } else if (kind === 'front') {
+      s += '<rect x="80" y="20" width="230" height="110" fill="#2a2a2c"/><rect x="80" y="112" width="230" height="18" fill="#3d3d3f"/>';
+      s += '<path d="M150 20 120 130H180zM240 20 210 130H270z" fill="#fff" opacity=".1"/>';
+      s += singer(150, 58, .42, '#8e8e90', 'long') + singer(240, 58, .42, '#0c0c0d', 'bob');
+      for (var hx = 30; hx <= 370; hx += 58) {
+        s += '<ellipse cx="' + hx + '" cy="222" rx="30" ry="26" fill="#0f0f10"/><circle cx="' + hx + '" cy="178" r="21" fill="#141415"/>';
+      }
+      s += '<path d="M198 168C202 162 208 162 212 168" stroke="#bdbdbd" stroke-width="2" fill="none"/><path d="M200 196 204 190 208 194 212 188 216 196z" fill="#d6d6d6"/>';
+      s += '<ellipse cx="205" cy="182" rx="40" ry="38" fill="none" stroke="#ff4a3a" stroke-width="3"/>';
+    } else {
+      s += '<rect width="390" height="220" fill="#232325"/><circle cx="195" cy="100" r="120" fill="#fff" opacity=".06"/>';
+      s += '<ellipse cx="160" cy="112" rx="38" ry="46" fill="#5d5d5f"/><path d="M122 100C118 50 190 40 196 90L190 120C170 90 140 90 122 100z" fill="#0a0a0b"/>';
+      s += '<path d="M150 96C160 84 182 84 190 96 182 106 160 106 150 96z" fill="#d8d8d8"/>';
+      s += '<ellipse cx="236" cy="112" rx="36" ry="44" fill="#4d4d4f"/><path d="M270 120C280 60 214 50 204 96L210 124C226 100 256 98 270 120z" fill="#0a0a0b"/>';
+      s += '<path d="M206 96C214 86 232 86 242 96 232 106 214 106 206 96z" fill="#0c0c0d" stroke="#bbbbbb"/><path d="M244 88 262 40M250 92 276 52" stroke="#9a9a9a" stroke-width="3"/>';
+      s += '<rect y="170" width="390" height="50" fill="#141415"/>';
+    }
+    return s;
+  }
+
+  Art.contactSheet = function () {
+    var frames = [
+      { x: 40, y: 60, t: '23:03:12', n: '14', k: 'duet', note: 'Duet: I.V. + C.M.' },
+      { x: 470, y: 60, t: '23:14:47', n: '15', k: 'front', note: 'Mr V., front row' },
+      { x: 40, y: 360, t: '23:18:05', n: '16', k: 'kiss', note: 'the cheek kiss' },
+      { x: 470, y: 360, t: '23:24:40', n: '17', k: 'bow', note: 'finale, bows' }
+    ];
+    var s = '<svg class="contact" viewBox="0 0 900 640" role="img" aria-label="Contact sheet: four photographs of the duet, timestamped 23:03, 23:14, 23:18 and 23:24">';
+    s += '<defs><clipPath id="cs-clip"><rect width="390" height="220"/></clipPath></defs><rect width="900" height="640" fill="#161415"/>';
+    [30, 330].forEach(function (y) {
+      s += '<rect x="20" y="' + y + '" width="860" height="270" fill="#050505"/>';
+      for (var i = 0; i < 34; i++) {
+        s += '<rect x="' + (30 + i * 25) + '" y="' + (y + 8) + '" width="13" height="9" rx="2" fill="#2d2a2b"/>' +
+          '<rect x="' + (30 + i * 25) + '" y="' + (y + 253) + '" width="13" height="9" rx="2" fill="#2d2a2b"/>';
+      }
+      s += '<text x="760" y="' + (y + 25) + '" font-family="Arial" font-size="11" fill="#6e6a60">VELVET 400</text>';
+    });
+    frames.forEach(function (f) {
+      s += '<g transform="translate(' + f.x + ' ' + f.y + ')"><g clip-path="url(#cs-clip)">' + scene(f.k) + '</g>' +
+        '<text x="378" y="210" text-anchor="end" ' + MONO + ' font-weight="700" font-size="19" fill="#ff9a3c">' + f.t + '</text>' +
+        '<text x="12" y="30" font-family="Caveat,cursive" font-size="26" fill="#ff4a3a">' + f.note + '</text></g>';
+      s += '<text x="' + (f.x + 2) + '" y="' + (f.y + 236) + '" font-family="Arial" font-size="11" fill="#77726a">\u25b8 ' + f.n + '</text>';
+    });
+    s += '</svg>';
+    return s;
+  };
+})();
+
+</script>
+<script>
+/* Velvet Crown: the case. Envelopes, suspects and the accusation form. */
+window.CASE = (function () {
+  'use strict';
+  var Art = window.Art;
+  var C = { evidence: [] };
+
+  C.envelopes = [
+    { id: 'A', title: 'The night of the masquerade', line: 'The first file from Chief Inspector Duret.' },
+    { id: 'B', title: 'Victor\u2019s safe', line: 'Behind the painting in the Crown Office. The code died with him.', lock: 'safe' },
+    { id: 'C', title: 'Lab results and lockers', line: 'Duret sends these as soon as you can read her page 13 of Victor\u2019s notebook.', lock: 'call' }
+  ];
+
+  C.suspects = [
+    { id: 'isabella', name: 'Isabella Valmont', role: 'Victor\u2019s wife', age: 41, height: '1.76 m', mask: 'Silver butterfly', keycard: 'Yes',
+      about: 'Married Victor in 2016. Former headline singer of the Velvet Crown revue. Sole heir under his current will, written in 2017.' },
+    { id: 'marco', name: 'Marco Santoro', role: 'Floor manager', age: 55, height: '1.77 m', mask: 'Black half-mask (staff)', keycard: 'Yes',
+      about: 'Victor\u2019s right hand since 2001. Runs the gaming floor and the nightly count. Delivers the fresh deck for Victor\u2019s Last Hand every evening.' },
+    { id: 'kraus', name: 'Dr Leopold Kraus', role: 'Victor\u2019s physician', age: 63, height: '1.71 m', mask: 'Ivory plague doctor', keycard: 'No',
+      about: 'Victor\u2019s doctor and friend of forty years. An enthusiastic, unlucky gambler. Played the final table tonight. Left his medical bag in the cloakroom.' },
+    { id: 'nikolai', name: 'Nikolai Petrov', role: 'Rival casino owner', age: 54, height: '1.95 m', mask: 'Gilded lion', keycard: 'No',
+      about: 'Owner of the Aurora Palace across the bay. Has offered to buy the Velvet Crown three times. Played the final table tonight.' },
+    { id: 'celeste', name: 'Celeste Moreau', role: 'Resident jazz singer', age: 31, height: '1.82 m', mask: 'Black feathers', keycard: 'No',
+      about: 'Three years into a six-year contract. Headlined the gala and sang a surprise duet with Mrs Valmont.' },
+    { id: 'tobias', name: 'Tobias Grey', role: 'Dealer, Salon Priv\u00e9', age: 30, height: '1.84 m', mask: 'Black half-mask (staff)', keycard: 'No',
+      about: 'Dealer at the Velvet Crown since 2024. Amateur card magician, popular with guests and staff. Deals left-handed. Dealt the final table tonight.' }
+  ];
+
+  C.witnesses = {
+    ana: { name: 'Ana Kova\u010d', role: 'Relief dealer' },
+    mirela: { name: 'Mirela Begi\u0107', role: 'Cashier, the Cage' },
+    luka: { name: 'Luka Petri\u0107', role: 'Bartender, Le Tr\u00e8fle' }
+  };
+
+  C.accusation = [
+    { id: 'who', q: 'Who killed Victor Valmont?', type: 'suspect' },
+    { id: 'how', q: 'How did the poison reach him?', options: [
+      { id: 'cognac', t: 'It was in the cognac decanter' },
+      { id: 'cigar', t: 'It was on his cigar' },
+      { id: 'cards', t: 'It was on the corners of a swapped, resealed deck of cards' },
+      { id: 'tablets', t: 'His heart tablets were switched' },
+      { id: 'champagne', t: 'It was in the midnight champagne' }] },
+    { id: 'entry', q: 'How did the killer get into the office at 23:11?', options: [
+      { id: 'victor', t: 'Victor let them in' },
+      { id: 'marco', t: 'With Marco\u2019s keycard' },
+      { id: 'lifted', t: 'With Isabella\u2019s keycard, lifted from her clutch without her knowing' },
+      { id: 'lent', t: 'Isabella handed her keycard to an accomplice' }] },
+    { id: 'why', q: 'Why?', options: [
+      { id: 'will', t: 'To inherit the casino before the new will was signed' },
+      { id: 'revenge', t: 'Revenge for a father sent to prison on Victor\u2019s false word' },
+      { id: 'debt', t: 'To wipe out a \u20ac380,000 debt' },
+      { id: 'skim', t: 'To hide money skimmed from the count' },
+      { id: 'takeover', t: 'To force the sale of the Velvet Crown' },
+      { id: 'contract', t: 'To escape a three-year contract' }] }
+  ];
+
+  C.esc = function (t) {
+    return String(t == null ? '' : t).replace(/[&<>"']/g, function (m) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m];
+    });
+  };
+  C.suspect = function (id) { return C.suspects.filter(function (s) { return s.id === id; })[0]; };
+  C.add = function (ev) { C.evidence.push(ev); };
+
+  /* Transcript block for an interview. */
+  C.statement = function (doc, id, html) {
+    var s = C.suspect(id), w = C.witnesses[id];
+    var who = s ? Art.portrait(id, 'portrait portrait-mini') :
+      '<span class="badge-initials" aria-hidden="true">' + w.name.split(' ').map(function (p) { return p[0]; }).join('') + '</span>';
+    var p = s || w;
+    return '<section class="stmt" id="' + doc + '-' + id + '"><header class="stmt-who">' + who +
+      '<div><h4>' + p.name + '</h4><p>' + p.role + '</p></div></header><div class="stmt-body">' + html + '</div></section>';
+  };
+  C.jump = function (doc, ids) {
+    return '<nav class="jump" aria-label="Jump to a statement">' + ids.map(function (id) {
+      var p = C.suspect(id) || C.witnesses[id];
+      return '<button type="button" class="chip" data-jump="' + doc + '-' + id + '">' + p.name.replace('Dr ', '').split(' ')[0] + '</button>';
+    }).join('') + '</nav>';
+  };
+  C.head = function (left, right) {
+    return '<header class="rep-head"><span>' + left + '</span><span>' + right + '</span></header>';
+  };
+
+  return C;
+})();
+
+</script>
+<script>
+/* Velvet Crown: Envelope A, the night of the masquerade. */
+(function () {
+  'use strict';
+  var C = window.CASE, Art = window.Art, esc = C.esc;
+
+  C.add({ id: 'A1', env: 'A', kind: 'letter', title: 'Letter from the Chief Inspector', blurb: 'Your briefing. Read this first.',
+    render: function (ctx) {
+      var n = ctx.names.filter(Boolean).map(esc);
+      var who = n.length === 2 ? 'Detectives ' + n[0] + ' and ' + n[1] : n.length === 1 ? 'Detective ' + n[0] : 'Detectives';
+      return '<article class="doc doc-letter">' +
+        '<header class="letterhead"><svg class="lh-crest" viewBox="0 0 100 110" aria-hidden="true"><use href="#crest"/></svg>' +
+        '<div><p class="lh-org">Monte Verde Criminal Police</p><p class="lh-sub">Office of the Chief Inspector</p></div></header>' +
+        '<p class="doc-date">Sunday 15 November, 03:10</p>' +
+        '<p>Dear ' + who + ',</p>' +
+        '<p>I\u2019m sorry to call you out at this hour, and sorrier about the reason.</p>' +
+        '<p>At 00:07 tonight, Victor Valmont was found dead at the desk of his private office above the gaming floor, in the middle of his own party. The Velvet Crown was celebrating forty-five years under his ownership with a masquerade gala: three hundred guests, every one of them in a mask.</p>' +
+        '<p>His doctor swears it was no heart attack. So do I. The building was sealed at 00:15 and nobody has left since.</p>' +
+        '<p>Six people had reasons to want him gone, and all six were under this roof. Everything we have so far is in this file. As the lab and my officers bring in more, I\u2019ll send it to you in sealed envelopes. Some doors only you can open, though. Victor\u2019s safe, for one: the code died with him.</p>' +
+        '<p>Before dawn I need three answers from you: who killed Victor Valmont, how it was done, and why.</p>' +
+        '<p>Trust the evidence, not the masks.</p>' +
+        '<p class="sign">L\u00e9a Duret</p><p class="sign-sub">Chief Inspector</p></article>';
+    } });
+
+  C.add({ id: 'A2', env: 'A', kind: 'report', title: 'Crime scene report', blurb: 'The Crown Office, as the police found it.',
+    render: function () {
+      return '<article class="doc doc-report">' + C.head('Monte Verde Criminal Police', 'Case 1114') +
+        '<h3 class="rep-title">Scene report: the Crown Office</h3>' +
+        '<dl class="kv"><dt>Location</dt><dd>Crown Office, first floor, Velvet Crown Casino</dd>' +
+        '<dt>Reported</dt><dd>00:07, by Marco Santoro, floor manager, who found the body at 00:04</dd>' +
+        '<dt>Building sealed</dt><dd>00:15, by casino security at police request</dd>' +
+        '<dt>Police on scene</dt><dd>00:19</dd>' +
+        '<dt>Victim</dt><dd>Victor Valmont, 67, owner of the casino since 14 November 1981</dd></dl>' +
+        '<h4>The body</h4><p>Seated in the desk chair, slumped forward over the blotter. No wounds and no sign of a struggle. Signs consistent with sudden heart failure; the police surgeon suspects poisoning. Preliminary time of death: between 23:30 and 00:05.</p>' +
+        '<h4>On the desk (numbers match photograph 3)</h4><ol class="items">' +
+        '<li>A game of patience (Klondike solitaire) in progress, dealt from a fresh deck.</li>' +
+        '<li>Crystal glass of cognac, about half full.</li>' +
+        '<li>Crystal decanter of cognac, Mr Valmont\u2019s private reserve.</li>' +
+        '<li>Ashtray with an unlit cigar.</li><li>Fountain pen.</li>' +
+        '<li>Framed wedding photograph, Mr and Mrs Valmont, 2016.</li>' +
+        '<li>A book, <i>The Gambler\u2019s Almanac</i>.</li><li>Desk lamp.</li></ol>' +
+        '<h4>Elsewhere in the office</h4><ul class="items">' +
+        '<li>Waste bin: the cellophane wrapper from a pack of casino playing cards. The numbered security seal on it reads <strong>VC-0431</strong>.</li>' +
+        '<li>Under the desk blotter, a note in Mr Valmont\u2019s handwriting:<blockquote class="hand">Nov. \u2014 My four oldest friends keep the code. Ask them in the order of my heart.</blockquote></li>' +
+        '<li>Wall safe behind the painting: locked, four-digit keypad. Mrs Valmont states that only her husband knew the code. The manufacturer cannot send a technician before Monday.</li>' +
+        '<li>Door: electronic keycard lock. Log requested from casino security.</li>' +
+        '<li>Window: locked from the inside.</li></ul>' +
+        '<h4>Notes</h4><p>Dr L. Kraus reached the office at 00:12 with Mrs Valmont and announced to everyone present that Mr Valmont had been poisoned. Within half an hour the whole building knew.</p>' +
+        '<p>At 00:30, asked for her keycard, Mrs Valmont took it from her evening clutch.</p>' +
+        '<div class="stamp">Confidential</div></article>';
+    } });
+
+  C.add({ id: 'A3', env: 'A', kind: 'photo', title: 'Crime scene photograph', blurb: 'Victor\u2019s desk at 00:41. Look closely.',
+    render: function () {
+      return '<article class="doc doc-photo">' +
+        '<div class="photo-tools"><button type="button" class="btn btn-small" data-loupe-toggle aria-pressed="true">Magnifier on</button>' +
+        '<span>Move over the photo to look closer. Tap the button to switch the magnifier off on a touch screen.</span></div>' +
+        '<div class="loupe-wrap" data-loupe>' + Art.deskScene() +
+        '<div class="loupe" aria-hidden="true"><div class="loupe-inner">' + Art.deskScene() + '</div></div></div>' +
+        '<p class="caption">Photograph 3, taken by the scene officer at 00:41. The numbered markers match the scene report.</p></article>';
+    } });
+
+  C.add({ id: 'A4', env: 'A', kind: 'dossier', title: 'The six suspects', blurb: 'Police files on everyone with a motive.',
+    render: function () {
+      return '<article class="doc doc-dossier"><h3 class="dos-title">The six suspects</h3>' +
+        '<p class="dos-note">Heights were measured in the shoes each person wore to the gala.</p><div class="dos-grid">' +
+        C.suspects.map(function (s) {
+          return '<section class="dos-card">' + Art.portrait(s.id, 'portrait') + '<div><h4>' + s.name + '</h4>' +
+            '<p class="dos-role">' + s.role + ', ' + s.age + '</p><dl class="kv kv-tight"><dt>Height</dt><dd>' + s.height + '</dd>' +
+            '<dt>Mask tonight</dt><dd>' + s.mask + '</dd><dt>Office keycard</dt><dd>' + s.keycard + '</dd></dl><p>' + s.about + '</p></div></section>';
+        }).join('') + '</div></article>';
+    } });
+
+  C.add({ id: 'A5', env: 'A', kind: 'programme', title: 'Gala programme', blurb: 'The evening\u2019s schedule, as printed.',
+    render: function () {
+      var rows = [['20:30', 'Doors open. Guests without a mask receive a white Bauta at the entrance.'],
+        ['21:00', 'Welcome from Victor Valmont and the anniversary spin of the wheel'],
+        ['22:00', 'Celeste Moreau sings <i>Midnight Blue</i>, a jazz set in the Grand Salon'],
+        ['22:45', 'Final table of the Anniversary Poker Classic, Salon Priv\u00e9, by invitation'],
+        ['23:00', 'A surprise in the Grand Salon'],
+        ['23:30', 'Masked auction for the Monte Verde Children\u2019s Hospital'],
+        ['00:00', 'Unmasking at midnight and a champagne toast']];
+      return '<article class="doc doc-programme"><div class="prog-inner">' + Art.crownMark('prog-crown') +
+        '<p class="prog-kicker">The Velvet Crown</p><h3 class="prog-title">Forty-five years</h3>' +
+        '<p class="prog-sub">Anniversary Masquerade Gala, Saturday 14 November</p><ol class="prog-list">' +
+        rows.map(function (r) { return '<li><time>' + r[0] + '</time><span>' + r[1] + '</span></li>'; }).join('') +
+        '</ol><p class="prog-foot">Black tie and masks, please. The house wishes you luck.</p></div></article>';
+    } });
+
+  C.add({ id: 'A6', env: 'A', kind: 'statements', title: 'First interviews', blurb: 'Statements taken between 01:00 and 02:30.',
+    render: function () {
+      var d = 'A6';
+      return '<article class="doc doc-statements">' + C.head('Case 1114', 'First interviews, 01:00 to 02:30') +
+        C.jump(d, ['isabella', 'marco', 'kraus', 'nikolai', 'celeste', 'tobias']) +
+        C.statement(d, 'isabella', '<p>Victor opened the night at nine with his speech and the anniversary spin. You should have seen him, like a boy with a new toy.</p>' +
+          '<p>From a quarter to eleven I watched the final table in the Salon Priv\u00e9. I\u2019ll admit I was there to watch Nikolai play. Even the dealer was in a playful mood: at about ten to eleven he made my wedding ring vanish from my finger, and it turned up in Nikolai\u2019s champagne. Everyone laughed. My clutch was right there on the rail beside me.</p>' +
+          '<p>At five to eleven I slipped backstage. Celeste and I sang the surprise duet from eleven until twenty-five past, and Victor sat in the front row the whole time, grinning. Afterwards he went upstairs for his Last Hand, as he does every night, and I went back to the Salon Priv\u00e9.</p>' +
+          '<p>My keycard? In my clutch, where it always is. And no, I don\u2019t know the safe code. Victor had his sayings about cards. \u201cLove, work, money, trouble: hearts, spades, diamonds, clubs. That\u2019s the order of my heart.\u201d He had it engraved on his cigar case.</p>') +
+        C.statement(d, 'marco', '<p>Every night since 1981, at half past eleven, Victor plays one hand of solitaire with a brand-new sealed deck. The Last Hand, he calls it. Win it and tomorrow is lucky. The whole staff knows about it.</p>' +
+          '<p>At 21:55 I signed tonight\u2019s deck out of the Cage and took it up at 22:01, same as always. He wasn\u2019t in the office. I left it sealed on the blotter and came straight back down.</p>' +
+          '<p>From 23:05 I was in the Cage with Mirela for the midnight count. At 00:04 I carried the takings upstairs and found him. I called security at once.</p>' +
+          '<p>He was a superstitious man. He kept four cards from his very first deck, yellow as old piano keys, hidden around that desk. \u201cMy oldest friends,\u201d he called them. And forty years at the tables, he still licked his thumb before every card he dealt. I never broke him of it.</p>') +
+        C.statement(d, 'kraus', '<p>Victor and I had words at the bar at about half past ten. About money, if you must know, and it\u2019s nobody\u2019s business but ours.</p>' +
+          '<p>From a quarter to eleven I played the final table of the Poker Classic. I didn\u2019t leave my seat until after midnight. Ask anyone at that table.</p>' +
+          '<p>I\u2019ve been Victor\u2019s doctor for thirty years. His heart was as strong as an ox\u2019s. That\u2019s why I said it the moment I saw him: this was no natural death. Somebody poisoned him.</p>') +
+        C.statement(d, 'nikolai', '<p>I came to play cards, Inspector, not to kill my competition. Yes, I offered Victor sixty million for this old palace. Yes, he laughed in my face. Three times.</p>' +
+          '<p>From 22:45 I sat at the final table. I was chip leader by midnight; you can check. I barely saw Victor all evening. He was downstairs, watching his wife sing.</p>' +
+          '<p>Why would I need him dead? With the Aurora Palace across the bay, the Velvet Crown was dying on its own.</p>') +
+        C.statement(d, 'celeste', '<p>My first set ran from ten until a quarter to eleven. Then I rested in my dressing room until the duet with Isabella: eleven until about twenty-five past, in front of three hundred people. After that I stayed backstage until the unmasking.</p>' +
+          '<p>Victor held my contract like a leash. Three more years. But I sing for a living, Inspector. I don\u2019t poison old men.</p>' +
+          '<p>My father was a performer too, you know. He died when I was nine. I\u2019ve had enough death for one life.</p>') +
+        C.statement(d, 'tobias', '<p>I dealt the final table from a quarter to eleven. My break was 23:05 to 23:20. I went out onto the terrace for a cigarette and some air; the Salon gets hot with all those masks. Nobody saw me, I suppose. It was just me and the sea.</p>' +
+          '<p>Mr Valmont tipped well and remembered everyone\u2019s name. Beyond that I hardly knew him.</p>' +
+          '<p>The ring? A little trick for Mrs Valmont. Guests like a bit of magic with their cards. It\u2019s good for tips.</p>') +
+        '</article>';
+    } });
+
+  C.add({ id: 'A7', env: 'A', kind: 'plan', title: 'Floor plan', blurb: 'Both floors, the doors and the cameras.',
+    render: function () {
+      return '<article class="doc doc-plan"><div class="plan-frame">' + Art.floorPlan() + '</div>' +
+        '<div class="plan-notes"><h4>Notes from the scene officer</h4>' +
+        '<p>The Crown Office can only be reached by the private stairs from the staff corridor. Camera 04 watches the landing outside the office door.</p>' +
+        '<p>Walking times, measured tonight: Salon Priv\u00e9 to the office door by the staff corridor, 40 seconds. Stage to the office door, 55 seconds. Terrace to the Salon Priv\u00e9, 30 seconds.</p>' +
+        '<p>There are no cameras in the staff corridor, in the Salon Priv\u00e9 or on the terrace.</p></div></article>';
+    } });
+})();
+
+</script>
+<script>
+/* Velvet Crown: Envelope B, Victor's safe. */
+(function () {
+  'use strict';
+  var C = window.CASE, Art = window.Art;
+
+  /* Page 13, written in Victor's card shorthand. */
+  C.cipher = '7S 8H 5H 3D 7H 5S 5H QS JD 7H 8H 4C 2S 6S 7S 6S 7D 3H 8H 9H QH 4H AD 9H 6S 9D 8S AS JC 4H 5H 5S 5D KH QS KD 5S 2S 2S 6H 2C'.split(' ');
+
+  C.add({ id: 'B1', env: 'B', kind: 'safe', title: 'Safe inventory', blurb: 'What Victor kept behind the painting.',
+    render: function () {
+      return '<article class="doc doc-report">' + C.head('Monte Verde Criminal Police', 'Case 1114') +
+        '<h3 class="rep-title">Contents of the wall safe</h3>' +
+        '<p>Opened at 03:40 with the code found by the detectives, in the presence of Mrs Valmont.</p><ol class="items">' +
+        '<li>\u20ac220,000 in used notes, the casino\u2019s float. Bank bands intact.</li>' +
+        '<li>Deeds to the Velvet Crown Casino, dated 14 November 1981.</li>' +
+        '<li>Mr Valmont\u2019s black leather notebook, pages 1 to 15 used.</li>' +
+        '<li>Tucked inside the notebook: a worn playing card with handwriting on the back.</li>' +
+        '<li>A handwritten draft of a new will, with a letter from the notary.</li>' +
+        '<li>A witness summons from the Tribunal of Monte Verde: <i>State v. A. G.</i>, hearing of 9 March 2004. Witness for the prosecution: Victor Valmont.</li>' +
+        '<li>A framed four-leaf clover.</li></ol>' +
+        '<p>Mrs Valmont had never seen inside the safe. Nothing appears to be missing.</p></article>';
+    } });
+
+  C.add({ id: 'B2', env: 'B', kind: 'will', title: 'The draft will', blurb: 'Unsigned. The notary was booked for Monday.',
+    render: function () {
+      return '<article class="doc doc-will"><div class="notary">' +
+        '<p class="notary-head">Ma\u00eetre Hugo Lenoir, Notary<span>12 Rue des Palmiers, Monte Verde</span></p>' +
+        '<p class="doc-date">Tuesday 10 November</p><p>Dear Mr Valmont,</p>' +
+        '<p>As requested, I have reserved Monday 16 November at 10:00 for the signing of your new will. Until it is signed, your will of 2017 remains valid, under which Mrs Isabella Valmont is your sole heir.</p>' +
+        '<p>As you asked, all correspondence on this matter goes to the casino and not to your home. Please bring the full name and particulars of the new principal beneficiary, which you preferred not to put in writing.</p>' +
+        '<p>Yours faithfully,<br>H. Lenoir</p></div>' +
+        '<div class="draft"><p class="draft-title">My last will. Draft, for Lenoir on Monday.</p>' +
+        '<p>1. To my wife Isabella: the villa at Cap Rouge and twenty thousand a month for life.</p>' +
+        '<p>2. To Marco Santoro: nothing. He knows why.</p>' +
+        '<p>3. The Velvet Crown, entire, to the only child of the man I wronged in March 2004. Restitution: too late, but in full.</p>' +
+        '<p class="draft-sig">V. V.</p></div><p class="caption">The draft is not signed.</p></article>';
+    } });
+
+  C.add({ id: 'B3', env: 'B', kind: 'notebook', title: 'Victor\u2019s black notebook', blurb: 'His private notes. Page 13 is in code.',
+    render: function () {
+      var cells = C.cipher.map(function (t, i) {
+        var r = t.slice(0, -1), s = t.slice(-1);
+        return '<label class="cell">' + Art.mini(r, s) +
+          '<input type="text" maxlength="1" data-i="' + i + '" autocomplete="off" autocapitalize="characters" spellcheck="false" aria-label="Letter for card ' + (i + 1) + '"></label>';
+      }).join('');
+      return '<article class="doc doc-notebook"><div class="nb-spread">' +
+        '<section class="nb-page"><p class="nb-no">11</p><p>3 Nov. Count short again, the third time since September. Forty thousand. Only Marco touches the money between the tables and the Cage. Deal with it after the gala.</p></section>' +
+        '<section class="nb-page"><p class="nb-no">12</p><p>7 Nov. Leopold owes 380,000 now. Told him: pay by Monday, or I go to the medical board about the prescriptions he writes for himself.</p>' +
+        '<p>9 Nov. Petrov: sixty million, third offer. Over my dead body. And I. and N. at the Aurora on Thursday. I\u2019m old, not blind.</p>' +
+        '<p>Celeste wants to run to Petrov. The contract says three more years. I\u2019ll hold her to every day of it.</p></section>' +
+        '<section class="nb-page nb-cipher"><p class="nb-no">13</p>' +
+        '<p class="nb-help">Victor wrote this page in cards. Type a letter under each card as you work it out. Your letters are saved.</p>' +
+        '<div class="cipher" data-cipher>' + cells + '</div>' +
+        '<p class="nb-help"><button type="button" class="btn btn-small" data-cipher-clear>Clear my letters</button></p></section>' +
+        '<section class="nb-page"><p class="nb-no">14</p><p>Same hands. Same smile. Even the same trick with the ring. After twenty-two years I\u2019d know it anywhere.</p></section>' +
+        '<section class="nb-page"><p class="nb-no">15</p><p>Monday: Lenoir. Then the whole truth about March 2004. Those marked cards were never his. I let an innocent man die in a cell to protect the name of this house.</p>' +
+        '<p>The Last Hand was always going to come for me.</p></section></div></article>';
+    } });
+
+  C.add({ id: 'B4', env: 'B', kind: 'card', title: 'The dealer\u2019s shorthand', blurb: 'A worn card tucked into the notebook.',
+    render: function () {
+      return '<article class="doc doc-shorthand"><div class="oldcard"><div class="oldcard-writing">' +
+        '<p class="sh-title">Dealer\u2019s shorthand</p><p class="sh-sub">for what the house must never read</p>' +
+        '<p>' + Art.suit('H') + ' carries the first thirteen.</p>' +
+        '<p>' + Art.suit('S') + ' carries the last thirteen.</p>' +
+        '<p>' + Art.suit('D') + ' is a breath between words.</p>' +
+        '<p>' + Art.suit('C') + ' are liars. Pay them no mind.</p></div></div>' +
+        '<p class="caption">Found between pages 12 and 13, written on the back of a card from a very old casino deck.</p></article>';
+    } });
+
+  C.add({ id: 'B5', env: 'B', kind: 'log', title: 'Office keycard log', blurb: 'Every unlock of the Crown Office door.',
+    render: function () {
+      var rows = [['19:48:10', 'V. VALMONT'], ['21:12:44', 'V. VALMONT'], ['22:01:05', 'M. SANTORO'], ['23:11:31', 'I. VALMONT'], ['23:29:18', 'V. VALMONT'], ['00:04:52', 'M. SANTORO']];
+      return '<article class="doc doc-log">' + C.head('Velvet Crown security', 'Door controller printout') +
+        '<h3 class="rep-title">Crown Office door: unlock events</h3><p class="log-sub">Saturday 14 November to Sunday 15 November</p>' +
+        '<table class="ledger ledger-mono"><thead><tr><th>Time</th><th>Keycard</th></tr></thead><tbody>' +
+        rows.map(function (r) { return '<tr><td>' + r[0] + '</td><td>' + r[1] + '</td></tr>'; }).join('') + '</tbody></table>' +
+        '<h4>How the lock works</h4><p>Only unlocks are recorded. The door locks itself when it closes, and leaving the office is not logged.</p>' +
+        '<p>Four cards open this door: Victor Valmont\u2019s, Isabella Valmont\u2019s, Marco Santoro\u2019s, and a master card kept in the security office safe. The master card was not used tonight.</p></article>';
+    } });
+
+  C.add({ id: 'B6', env: 'B', kind: 'cctv', title: 'Camera 04 still', blurb: 'The landing outside the office at 23:11.',
+    render: function () {
+      return '<article class="doc doc-cctv"><div class="cctv-frame">' + Art.cctv() + '</div>' +
+        '<div class="tech-notes"><h4>Technician\u2019s notes, camera 04</h4><table class="ledger"><tbody>' +
+        '<tr><td>19:48, 21:12</td><td>V. Valmont, alone.</td></tr>' +
+        '<tr><td>22:01</td><td>M. Santoro, carrying a small box. Leaves at 22:02.</td></tr>' +
+        '<tr><td>23:11:29</td><td>Unidentified person comes up the stairs. Enters 23:11:31, leaves 23:14:02.</td></tr>' +
+        '<tr><td>23:29</td><td>V. Valmont, alone.</td></tr><tr><td>00:04</td><td>M. Santoro, with the cash bag.</td></tr></tbody></table>' +
+        '<p>Measured against the height strip on the door frame, the 23:11 visitor stands 1.83 m, give or take 2 cm, including footwear. Black tuxedo, black gloves, white full-face Bauta mask. The card is held to the reader in the <strong>left</strong> hand. Nothing visible is carried in or out.</p>' +
+        '<p>About sixty white Bauta masks were handed out at the entrance to guests who arrived without one. Staff wore black half-masks.</p></div></article>';
+    } });
+
+  C.add({ id: 'B7', env: 'B', kind: 'film', title: 'Photographer\u2019s contact sheet', blurb: 'The surprise duet, frame by frame.',
+    render: function () {
+      return '<article class="doc doc-film"><div class="film-frame">' + Art.contactSheet() + '</div>' +
+        '<p class="caption">R\u00e9my Laurent, official gala photographer. His camera clock was checked against the casino\u2019s master clock at 20:00 and was correct to the second. The grease-pencil notes are his.</p></article>';
+    } });
+})();
+
+</script>
+<script>
+/* Velvet Crown: Envelope C, lab results and lockers. */
+(function () {
+  'use strict';
+  var C = window.CASE;
+
+  C.add({ id: 'C1', env: 'C', kind: 'report', title: 'Autopsy report', blurb: 'Cause and time of death.',
+    render: function () {
+      return '<article class="doc doc-report">' + C.head('Institute of Forensic Medicine', 'Case 1114') +
+        '<h3 class="rep-title">Post-mortem examination: Victor Valmont, 67</h3>' +
+        '<dl class="kv"><dt>Cause of death</dt><dd>Heart failure caused by acute poisoning with a cardiac glycoside, a heart poison of the foxglove family.</dd>' +
+        '<dt>Time of death</dt><dd>Between 23:40 and 00:00.</dd>' +
+        '<dt>Route</dt><dd>By mouth. First symptoms would appear ten to twenty minutes after the first dose.</dd></dl>' +
+        '<h4>Findings</h4><ul class="items">' +
+        '<li>Traces of the poison on the tongue and lips, and on the tips of the right thumb and index finger.</li>' +
+        '<li>Stomach: a small amount of cognac. No food since about 20:00.</li>' +
+        '<li>Heart healthy for his age. No heart medication prescribed and none in his blood.</li></ul>' +
+        '<h4>Remarks</h4><p>The pattern of residue, on the fingertips and the tongue, suggests many small doses carried to the mouth by the fingers rather than one poisoned drink.</p></article>';
+    } });
+
+  C.add({ id: 'C2', env: 'C', kind: 'lab', title: 'Forensic lab report', blurb: 'What the poison was, and where it was.',
+    render: function () {
+      return '<article class="doc doc-report">' + C.head('Police forensic laboratory', 'Case 1114') +
+        '<h3 class="rep-title">Toxicology and trace evidence</h3>' +
+        '<table class="ledger"><thead><tr><th>Item</th><th>Result</th></tr></thead><tbody>' +
+        '<tr><td>Solitaire cards from the desk, all 52</td><td class="pos">Poison on the corners of every card</td></tr>' +
+        '<tr><td>Cognac glass</td><td>Negative</td></tr><tr><td>Cognac decanter</td><td>Negative</td></tr>' +
+        '<tr><td>Cigar</td><td>Negative. Unlit and untouched.</td></tr><tr><td>Fountain pen</td><td>Negative</td></tr>' +
+        '<tr><td>Cellophane wrapper, seal VC-0431</td><td>No poison on the outside. No fingerprints at all: wiped clean. The seam carries two lines of glue, the factory\u2019s and a second one applied by hand. The pack had been opened and expertly resealed.</td></tr>' +
+        '</tbody></table><h4>The poison</h4>' +
+        '<p>A crude plant extract of <i>Digitalis purpurea</i>, the common foxglove. There were no tablet binders or fillers in it, so it was not made from pharmaceutical pills.</p>' +
+        '<p>For comparison, the digoxin tablets from Dr Kraus\u2019s medical bag are a standard pharmaceutical product. They do not match.</p></article>';
+    } });
+
+  C.add({ id: 'C3', env: 'C', kind: 'log', title: 'The Cage: deck register', blurb: 'Every deck issued and returned tonight.',
+    render: function () {
+      return '<article class="doc doc-log">' + C.head('The Cage', 'Deck issue register') +
+        '<p class="log-sub">Every deck carries a numbered security seal on its cellophane. The numbers are unique and logged when a deck is issued.</p>' +
+        '<table class="ledger"><thead><tr><th>Time</th><th>Seals</th><th>Issued to</th><th>Signed</th></tr></thead><tbody>' +
+        '<tr><td>20:00</td><td>VC-0429 to VC-0432</td><td>Salon Priv\u00e9, table 1 (4 decks)</td><td>T. Grey</td></tr>' +
+        '<tr><td>20:00</td><td>VC-0433 to VC-0448</td><td>Blackjack tables 1 to 4 (16 decks)</td><td>A. Kova\u010d, J. Ricci</td></tr>' +
+        '<tr><td>21:55</td><td>VC-0917</td><td>Crown Office, Mr Valmont\u2019s Last Hand</td><td>M. Santoro</td></tr></tbody></table>' +
+        '<h4>Midnight count</h4><table class="ledger"><tbody>' +
+        '<tr><td>23:05</td><td>Count opened in the Cage by M. Santoro and M. Begi\u0107</td></tr>' +
+        '<tr><td>23:19</td><td>Count closed and signed by M. Santoro and M. Begi\u0107</td></tr></tbody></table>' +
+        '<h4>Reconciliation at close, 00:40, under police supervision</h4>' +
+        '<table class="ledger"><thead><tr><th>Station</th><th>Issued</th><th>Returned</th><th>Remarks</th></tr></thead><tbody>' +
+        '<tr><td>Salon Priv\u00e9, table 1</td><td>4</td><td>3: VC-0429, VC-0430, VC-0432</td><td>VC-0431: \u201cdiscarded at 21:30, drink spilled on it. T.G.\u201d No discarded deck was found in the Salon Priv\u00e9 bins.</td></tr>' +
+        '<tr><td>Blackjack 1 to 4</td><td>16</td><td>16</td><td>None</td></tr>' +
+        '<tr><td>Crown Office</td><td>1: VC-0917</td><td>Not returned</td><td>In the office, per procedure</td></tr></tbody></table></article>';
+    } });
+
+  C.add({ id: 'C4', env: 'C', kind: 'log', title: 'Salon Priv\u00e9 records', blurb: 'Dealer rotation and the hand history.',
+    render: function () {
+      var hands = [[38, '23:01', 'T. Grey'], [39, '23:04', 'T. Grey'], [40, '23:07', 'A. Kova\u010d'], [41, '23:10', 'A. Kova\u010d'], [42, '23:13', 'A. Kova\u010d'],
+        [43, '23:16', 'A. Kova\u010d'], [44, '23:19', 'A. Kova\u010d'], [45, '23:22', 'T. Grey'], [46, '23:26', 'T. Grey'], [47, '23:29', 'T. Grey']];
+      return '<article class="doc doc-log">' + C.head('Anniversary Poker Classic', 'Salon Priv\u00e9, table 1') +
+        '<h3 class="rep-title">Dealer rotation</h3><table class="ledger"><thead><tr><th>Dealer</th><th>Dealing</th><th>On break</th></tr></thead><tbody>' +
+        '<tr><td>T. Grey</td><td>20:30\u201321:40, 21:55\u201323:05, 23:20\u201300:30</td><td>21:40\u201321:55, 23:05\u201323:20</td></tr>' +
+        '<tr><td>A. Kova\u010d</td><td>Covers table 1 during T. Grey\u2019s breaks, otherwise blackjack 2</td><td>None</td></tr></tbody></table>' +
+        '<h3 class="rep-title">Hand history, final table</h3>' +
+        '<p class="log-sub">Seats: 1 N. Petrov, 2 L. Kraus, 3 H. Duval, 4 K. Okafor, 5 A. Lindqvist. A player who leaves the table is marked as sitting out and is not dealt in. Nobody sat out between 22:45 and 23:52.</p>' +
+        '<table class="ledger ledger-mono"><thead><tr><th>Hand</th><th>Time</th><th>Dealer</th><th>Seats dealt in</th></tr></thead><tbody>' +
+        hands.map(function (h) { return '<tr><td>#' + h[0] + '</td><td>' + h[1] + '</td><td>' + h[2] + '</td><td>1 2 3 4 5</td></tr>'; }).join('') +
+        '</tbody></table></article>';
+    } });
+
+  C.add({ id: 'C5', env: 'C', kind: 'locker', title: 'Locker search', blurb: 'The staff roster and what the lockers held.',
+    render: function () {
+      var roster = [['03', 'Marco Santoro, floor manager'], ['07', 'Ana Kova\u010d, dealer'], ['12', 'Luka Petri\u0107, bartender'],
+        ['16', 'Mirela Begi\u0107, cashier'], ['21', 'Tobias Grey, dealer'], ['24', 'Jonas Ricci, dealer']];
+      return '<article class="doc doc-report">' + C.head('Monte Verde Criminal Police', 'Case 1114') +
+        '<h3 class="rep-title">Search of staff lockers and dressing rooms, 02:00 to 03:00</h3>' +
+        '<p>No member of staff had left the building since it was sealed at 00:15.</p>' +
+        '<h4>Staff roster: locker numbers</h4><table class="ledger ledger-narrow"><tbody>' +
+        roster.map(function (r) { return '<tr><td>' + r[0] + '</td><td>' + r[1] + '</td></tr>'; }).join('') + '</tbody></table>' +
+        '<h4>What we found</h4><dl class="kv kv-wide">' +
+        '<dt>Locker 03</dt><dd>Jacket, cigarettes, and a second, handwritten ledger of \u201cadjustments\u201d to the nightly count, September to November, totalling \u20ac40,000.</dd>' +
+        '<dt>Locker 07</dt><dd>Street clothes, a paperback novel, hand cream.</dd>' +
+        '<dt>Locker 12</dt><dd>Bar knives, a racing paper, a jar of cocktail cherries.</dd>' +
+        '<dt>Locker 16</dt><dd>Calculator, lunch box, knitting.</dd>' +
+        '<dt>Locker 21</dt><dd>Street clothes. A sealed deck of Velvet Crown cards, seal <strong>VC-0917</strong>, cellophane intact. A white Bauta mask of the kind handed out to guests, folded in a napkin. A pair of thin black gloves. Magician\u2019s props: a thumb tip, flash paper, cellophane sheets, a glue pen and a small heat sealer. An empty amber dropper bottle, hand-labelled <i>Fingerhut</i>. A faded photograph of a stage magician with a small boy on his shoulders. On the back: <span class="hand-inline">F\u00fcr Tobi, von deinem Papa, dem Grauen Geist. 1999</span></dd>' +
+        '<dt>Locker 24</dt><dd>Street clothes, a gym bag.</dd>' +
+        '<dt>Dressing room A, Mrs Valmont</dt><dd>Gowns. A bundle of love letters signed \u201cN.\u201d</dd>' +
+        '<dt>Dressing room B, Ms Moreau</dt><dd>Throat spray. A contract offer from the Aurora Palace: two million for three years. A photograph of a little girl on the shoulders of a man holding a trumpet, marked \u201cPapa, Cirque Lumi\u00e8re, 1998\u201d.</dd>' +
+        '<dt>Cloakroom ticket 118, Dr Kraus</dt><dd>Medical bag, searched with his consent: stethoscope, prescription pad, a box of digoxin 0.25 mg tablets prescribed to L. Kraus (30 in the box, 28 left), and a stack of IOUs.</dd></dl></article>';
+    } });
+
+  C.add({ id: 'C6', env: 'C', kind: 'news', title: 'Newspaper clippings', blurb: 'Monte Verde Courier, 2004 and 2009.',
+    render: function () {
+      return '<article class="doc doc-news"><div class="clip"><p class="np-mast">Monte Verde Courier</p><p class="np-date">Friday 12 March 2004</p>' +
+        '<h3 class="np-head">\u201cGrey Ghost\u201d jailed for casino fraud</h3><p class="np-deck">Velvet Crown\u2019s star illusionist gets six years after the owner\u2019s testimony</p>' +
+        '<div class="np-cols"><p>Anton Grauer, 44, the Austrian illusionist who packed the Velvet Crown\u2019s cabaret for a decade as the Grey Ghost (<i>Der Graue Geist</i>), was sentenced yesterday to six years in prison for cheating at the casino\u2019s high-stakes tables.</p>' +
+        '<p>The case rested largely on the evidence of casino owner Victor Valmont, who told the court he had personally watched Grauer switch marked cards into play.</p>' +
+        '<p>Grauer, famous for his signature illusion, the Vanishing Ring, denied the charges to the end. \u201cI have never cheated at cards,\u201d he told reporters on the court steps. \u201cOnly at magic.\u201d</p>' +
+        '<p>His wife Margit and their son, aged eight, will return to her family in Innsbruck.</p></div></div>' +
+        '<div class="clip clip-small"><p class="np-date">Monte Verde Courier, Thursday 3 December 2009</p><h4 class="np-head-sm">Illusionist dies in prison</h4>' +
+        '<p>Anton Grauer, 49, once celebrated as the Grey Ghost, died of pneumonia on Tuesday in Monte Verde prison, three months before his release. He always maintained his innocence.</p></div></article>';
+    } });
+
+  C.add({ id: 'C7', env: 'C', kind: 'statements', title: 'Second interviews', blurb: 'Everyone, confronted with the evidence.',
+    render: function () {
+      var d = 'C7';
+      return '<article class="doc doc-statements">' + C.head('Case 1114', 'Second interviews, 04:00 to 05:00') +
+        C.jump(d, ['isabella', 'marco', 'kraus', 'nikolai', 'celeste', 'tobias', 'ana', 'mirela', 'luka']) +
+        C.statement(d, 'isabella', '<p>A new will? I knew nothing about it. Victor never talked about money with me.</p>' +
+          '<p>My keycard never left my clutch, I swear it. Well, the clutch left my hand twice. At ten to eleven, during the dealer\u2019s ring trick, it lay on the rail right beside him. And when I came back to the Salon Priv\u00e9 at about 23:35, I knocked it off the rail. The same dealer, Tobias, picked it up and handed it back to me. Such lovely hands.</p>' +
+          '<p>Nikolai and I\u2026 yes. Since the summer. That isn\u2019t murder.</p>') +
+        C.statement(d, 'marco', '<p>All right. I took money from the count. Forty thousand. I meant to put it back before he noticed. But I didn\u2019t kill him.</p>' +
+          '<p>I carried deck VC-0917 up at 22:01, sealed, and I signed for it. I never went back up until midnight. Ask Mirela.</p>') +
+        C.statement(d, 'kraus', '<p>The digoxin is mine, for my own heart. Two tablets gone this week, and both of them are inside me.</p>' +
+          '<p>Yes, I owe Victor money, and yes, I said something foolish at the bar. But I was dealt into every hand at that table. Check the history.</p>') +
+        C.statement(d, 'nikolai', '<p>Isabella and I have been close since the summer. That is not a crime in Monte Verde.</p>' +
+          '<p>I was in every hand from eleven until half past. The table\u2019s own records will tell you so. And at my height, Inspector, I am hard to mistake for anyone else.</p>') +
+        C.statement(d, 'celeste', '<p>The Grey Ghost? I\u2019ve never heard the name. My father played trumpet in a travelling circus band. He died in a road accident when I was nine.</p>' +
+          '<p>And the poison: everyone backstage knew by half past twelve. Dr Kraus was shouting it down the corridor.</p>') +
+        C.statement(d, 'tobias', '<p>Deck 0431? Somebody knocked a gin and tonic over it at half past nine. Wet cards are useless, so I threw them away and noted it. That\u2019s procedure.</p>' +
+          '<p>The terrace. Alone. I needed air.</p>' +
+          '<p>The photograph in my locker is my father. He was a magician. Lots of people\u2019s fathers were something. Grey is my name. It always has been.</p>') +
+        C.statement(d, 'ana', '<p>I took over the final table at 23:05 and handed it back to Tobias at 23:20 exactly. He came back out of breath and pink in the face. Not like someone who\u2019d been smoking on a terrace. More like someone who\u2019d taken the stairs two at a time.</p>' +
+          '<p>And a spilled drink at half past nine? Not at that table. I brought the players their drinks myself, and everything was dry.</p>') +
+        C.statement(d, 'mirela', '<p>Marco was in the Cage with me from 23:05 until we signed off the count at 23:19. He never left. There\u2019s a camera over the Cage door if you want to check.</p>' +
+          '<p class="officer">Officer\u2019s note: camera 02 confirms it.</p>') +
+        C.statement(d, 'luka', '<p>The doctor and Mr Valmont had words at my bar around half past ten. The doctor said something like, \u201cYou\u2019ll get your money over my dead body, or yours.\u201d Then he stormed off to the Salon Priv\u00e9.</p>') +
+        '</article>';
+    } });
+})();
+
+</script>
+<script>
+/* Locks, hints and the solution. Encoded so nobody spoils the ending by accident. */
+window.VC_SECRET = 'eyJsb2NrcyI6IHsiQiI6ICI3Mjk0IiwgIkMiOiBbIkdSRVlHSE9TVCIsICJHUkFZR0hPU1QiLCAiR1JBVUVOR0VJU1QiLCAiR1JBVUVHRUlTVCJdfSwgImNhbGxSZXBseSI6ICJEdXJldDogXHUyMDFjVGhlIEdyZXkgR2hvc3RcdTIwMjYgQW50b24gR3JhdWVyLiBJIHJlbWVtYmVyIHRoYXQgdHJpYWwuIElmIGhpcyBjaGlsZCBpcyB1bmRlciB0aGlzIHJvb2YsIEkgd2FudCBldmVyeSBsb2NrZXIgaW4gdGhlIGJ1aWxkaW5nIG9wZW5lZC4gR2l2ZSBtZSBhbiBob3VyLlx1MjAxZCIsICJoaW50cyI6IHsiQiI6IFsiVmljdG9yXHUyMDE5cyBub3RlIHNheXMgaGlzIGZvdXIgb2xkZXN0IGZyaWVuZHMga2VlcCB0aGUgY29kZS4gTWFyY29cdTIwMTlzIGZpcnN0IGludGVydmlldyB0ZWxscyB5b3Ugd2hvIHRob3NlIGZyaWVuZHMgYXJlLiIsICJGb3VyIG9sZCwgeWVsbG93ZWQgY2FyZHMgZnJvbSBWaWN0b3JcdTIwMTlzIGZpcnN0IGRlY2sgYXJlIGhpZGRlbiBhcm91bmQgdGhlIGRlc2sgaW4gdGhlIGNyaW1lIHNjZW5lIHBob3RvZ3JhcGguIFVzZSB0aGUgbWFnbmlmaWVyIGFyb3VuZCB0aGUgZWRnZXM6IHRoZSBwaG90byBmcmFtZSwgdGhlIGJvb2ssIHRoZSBibG90dGVyLCB0aGUgYXNodHJheS4iLCAiUHV0IHRoZSBmb3VyIGNhcmRzIGluIHRoZSBvcmRlciBvZiBWaWN0b3JcdTIwMTlzIGhlYXJ0LiBJc2FiZWxsYSBxdW90ZXMgaXQgaW4gaGVyIGZpcnN0IGludGVydmlldzogaGVhcnRzLCBzcGFkZXMsIGRpYW1vbmRzLCBjbHVicy4gVGhlIGNvZGUgaXMgdGhlIGZvdXIgY2FyZCB2YWx1ZXMgaW4gdGhhdCBvcmRlci4iXSwgIkMiOiBbIlBhZ2UgMTMgaXMgd3JpdHRlbiBpbiBWaWN0b3JcdTIwMTlzIGNhcmQgc2hvcnRoYW5kLCBhbmQgdGhlIGtleSBpcyB0aGUgd29ybiBjYXJkIHR1Y2tlZCBpbnRvIHRoZSBub3RlYm9vay4gQ2x1YnMgYXJlIGxpYXJzOiBza2lwIGV2ZXJ5IGNsdWIuIiwgIkEgaGVhcnQgY2FycmllcyB0aGUgZmlyc3QgdGhpcnRlZW4gbGV0dGVyczogYWNlIGlzIEEsIHR3byBpcyBCLCBhbmQgc28gb24gdG8ga2luZywgd2hpY2ggaXMgTS4gQSBzcGFkZSBjYXJyaWVzIHRoZSBsYXN0IHRoaXJ0ZWVuOiBhY2UgaXMgTiwgdXAgdG8ga2luZywgd2hpY2ggaXMgWi4gQSBkaWFtb25kIGlzIGEgc3BhY2UgYmV0d2VlbiB3b3Jkcy4iLCAiVGhlIGZpcnN0IHdvcmQ6IDdcdTI2NjAgaXMgVCwgOFx1MjY2NSBpcyBILCA1XHUyNjY1IGlzIEUsIHRoZW4gYSBkaWFtb25kIGVuZHMgdGhlIHdvcmQ6IFRIRS4gQ2Fycnkgb24gdGhlIHNhbWUgd2F5LCB0aGVuIHRlbGwgRHVyZXQgdGhlIG5hbWUgaW4gdGhlIG1lc3NhZ2UuIl0sICJGIjogWyJTdGFydCB3aXRoIHRoZSBjYW1lcmEuIFdobyBhdCB0aGUgZ2FsYSBpcyBhYm91dCAxLjgzIG0gdGFsbCBpbiB0aGVpciBzaG9lcywgbGVmdC1oYW5kZWQsIGFuZCBoYWQgbm8gd2l0bmVzcyBiZXR3ZWVuIDIzOjA1IGFuZCAyMzoyMD8iLCAiVGhlIGtleWNhcmQgbG9nIHNheXMgSS4gVkFMTU9OVCBhdCAyMzoxMSwgYnV0IGNoZWNrIHRoZSBwaG90b2dyYXBoZXJcdTIwMTlzIHRpbWVzdGFtcHMuIFdoZXJlIHdhcyBJc2FiZWxsYSB0aGVuLCBhbmQgd2hvIGhhZCBoaXMgaGFuZHMgbmVhciBoZXIgY2x1dGNoIHRoYXQgZXZlbmluZz8iLCAiRm9sbG93IHRoZSBkZWNrcy4gV2hpY2ggc2VhbCB3YXMgaW4gVmljdG9yXHUyMDE5cyBiaW4sIHdoaWNoIHRhYmxlIHdhcyBpdCBpc3N1ZWQgdG8sIGFuZCB3aG9zZSBsb2NrZXIgaG9sZHMgdGhlIGRlY2sgTWFyY28gYWN0dWFsbHkgZGVsaXZlcmVkPyJdfSwgImFuc3dlcnMiOiB7IkIiOiAiVGhlIHNldmVuIG9mIGhlYXJ0cyBpcyB1bmRlciB0aGUgYXNodHJheSwgdGhlIHR3byBvZiBzcGFkZXMgaXMgdHVja2VkIGludG8gdGhlIHBob3RvIGZyYW1lLCB0aGUgbmluZSBvZiBkaWFtb25kcyBtYXJrcyBhIHBhZ2UgaW4gdGhlIGJvb2sgYW5kIHRoZSBmb3VyIG9mIGNsdWJzIHBlZWtzIG91dCBmcm9tIHVuZGVyIHRoZSBibG90dGVyLiBUaGUgY29kZSBpcyA8c3Ryb25nPjcyOTQ8L3N0cm9uZz4uIiwgIkMiOiAiUGFnZSAxMyByZWFkczogVEhFIEdSRVkgR0hPU1RcdTIwMTlTIENISUxEIElTIFVOREVSIE1ZIFJPT0YuIFRlbGwgRHVyZXQgPHN0cm9uZz5HcmV5IEdob3N0PC9zdHJvbmc+LiJ9LCAic29sdXRpb24iOiB7IndobyI6ICJ0b2JpYXMiLCAiaG93IjogImNhcmRzIiwgImVudHJ5IjogImxpZnRlZCIsICJ3aHkiOiAicmV2ZW5nZSJ9LCAicmF0aW5ncyI6IHsicGVyZmVjdCI6IFsiTWFzdGVyIGRldGVjdGl2ZXMiLCAiRXZlcnkgY2FyZCBvbiB0aGUgdGFibGUsIHJlYWQgY29ycmVjdGx5LiBUb2JpYXMgR3JleSBpcyBpbiBjdXN0b2R5LCBhbmQgQ2hpZWYgSW5zcGVjdG9yIER1cmV0IG93ZXMgeW91IGJvdGggYSB2ZXJ5IGdvb2QgZGlubmVyLiJdLCAiZ29vZCI6IFsiU2hhcnAtZXllZCBkZXRlY3RpdmVzIiwgIllvdSBuYW1lZCB0aGUga2lsbGVyIGFuZCBtb3N0IG9mIGhvdyBoZSBkaWQgaXQuIE9uZSBjYXJkIHNsaXBwZWQgcGFzdCB5b3UsIGJ1dCB0aGUgY2FzZSBob2xkcy4iXSwgIndobyI6IFsiWW91IGNhdWdodCBoaW0sIGp1c3QgYWJvdXQiLCAiWW91IG5hbWVkIHRoZSByaWdodCBtYW4sIGJ1dCBoaXMgbGF3eWVyIHdpbGwgaGF2ZSBmdW4gd2l0aCB0aGUgZGV0YWlscy4gUmVhZCB3aGF0IHJlYWxseSBoYXBwZW5lZCB0byBzZWUgd2hhdCB5b3UgbWlzc2VkLiJdLCAid3JvbmciOiBbIlRoZSB3cm9uZyBtYXNrIiwgIlRvYmlhcyBHcmV5IHdhbGtzIG91dCBpbnRvIHRoZSBkYXduIHdoaWxlIHNvbWVvbmUgZWxzZSBhbnN3ZXJzIGZvciBoaXMgY3JpbWUuIFJlYWQgd2hhdCByZWFsbHkgaGFwcGVuZWQsIHRoZW4gc2h1ZmZsZSB1cCBmb3IgYSByZW1hdGNoIHNvbWUgZGF5LiJdfSwgImNoYXB0ZXJzIjogW3sidGl0bGUiOiAiVGhlIG1hbiBiZWhpbmQgdGhlIG1hc2siLCAiaHRtbCI6ICI8cD5Ub2JpYXMgR3JleSB3YXMgYm9ybiBUb2JpYXMgR3JhdWVyLCB0aGUgb25seSBjaGlsZCBvZiBBbnRvbiBHcmF1ZXIsIHRoZSBpbGx1c2lvbmlzdCBNb250ZSBWZXJkZSBrbmV3IGFzIHRoZSBHcmV5IEdob3N0LjwvcD48cD5JbiBNYXJjaCAyMDA0LCBWaWN0b3IgVmFsbW9udCB0b2xkIGEgY291cnQgaGUgaGFkIHdhdGNoZWQgQW50b24gc3dpdGNoIG1hcmtlZCBjYXJkcyBpbnRvIHBsYXkgYXQgdGhlIGhpZ2gtc3Rha2VzIHRhYmxlcy4gSXQgd2Fzblx1MjAxOXQgdHJ1ZS4gVGhlIG1hcmtlZCBjYXJkcyB3ZXJlIHJlYWwsIGJ1dCB0aGUgY2hlYXQgd2FzIHNvbWVvbmUgZWxzZSwgYW5kIFZpY3RvciBjaG9zZSB0byBwcm90ZWN0IHRoZSBuYW1lIG9mIGhpcyBjYXNpbm8gcmF0aGVyIHRoYW4gZmluZCBvdXQgd2hvLiBBbnRvbiBnb3Qgc2l4IHllYXJzLiBIZSBkaWVkIGluIHByaXNvbiBpbiAyMDA5LCB0aHJlZSBtb250aHMgYmVmb3JlIGhpcyByZWxlYXNlLCBzdGlsbCBzYXlpbmcgaGUgaGFkIG5ldmVyIGNoZWF0ZWQgYXQgY2FyZHMsIG9ubHkgYXQgbWFnaWMuPC9wPjxwPlRvYmlhcyB3YXMgZWlnaHQgd2hlbiBoaXMgZmF0aGVyIHdhcyBzZW50ZW5jZWQuIEhlIGdyZXcgdXAgaW4gSW5uc2JydWNrIHdpdGggaGlzIG1vdGhlciwgbGVhcm5lZCBldmVyeSBvbmUgb2YgaGlzIGZhdGhlclx1MjAxOXMgdHJpY2tzLCBzaG9ydGVuZWQgaGlzIG5hbWUgdG8gR3JleSwgYW5kIGluIDIwMjQgdG9vayBhIGpvYiBkZWFsaW5nIGNhcmRzIGF0IHRoZSBWZWx2ZXQgQ3Jvd24uIEhlIHdhcyBwYXRpZW50LiBIZSBsZWFybmVkIHRoZSBob3VzZSwgaXRzIGtleWNhcmRzIGFuZCBpdHMgaGFiaXRzLCBhbmQgYWJvdmUgYWxsIFZpY3Rvclx1MjAxOXMgb2xkZXN0IHJpdHVhbDogdGhlIExhc3QgSGFuZC48L3A+PHA+VGhlIGJpdHRlciBpcm9ueSBpcyB0aGF0IFZpY3RvciByZWNvZ25pc2VkIGhpbS4gVGhlIHNhbWUgaGFuZHMsIHRoZSBzYW1lIHNtaWxlLCB0aGUgc2FtZSB0cmljayB3aXRoIHRoZSByaW5nLiBPbiBNb25kYXkgdGhlIG5vdGFyeSB3b3VsZCBoYXZlIG1hZGUgdGhlIFZlbHZldCBDcm93biwgZW50aXJlLCB0aGUgcHJvcGVydHkgb2YgdGhlIG9ubHkgY2hpbGQgb2YgdGhlIG1hbiBWaWN0b3Igd3JvbmdlZC4gVG9iaWFzIGtpbGxlZCBoaW0gdHdvIGRheXMgYmVmb3JlIGhlIHdvdWxkIGhhdmUgaW5oZXJpdGVkIGV2ZXJ5dGhpbmcuPC9wPiJ9LCB7InRpdGxlIjogIkhvdyBpdCB3YXMgZG9uZSIsICJodG1sIjogIjxvbD48bGk+PHN0cm9uZz4yMTozMC48L3N0cm9uZz4gVG9iaWFzIHBvY2tldHMgZGVjayBWQy0wNDMxIGZyb20gaGlzIG93biB0YWJsZVx1MjAxOXMgc3VwcGx5IGFuZCB3cml0ZXMgaXQgb2ZmIGFzIHJ1aW5lZCBieSBhIHNwaWxsZWQgZHJpbmsuIEFuYSBLb3ZhXHUwMTBkLCB3aG8gc2VydmVkIGV2ZXJ5IGRyaW5rIGF0IHRoYXQgdGFibGUsIHNhdyBubyBzcGlsbC48L2xpPjxsaT48c3Ryb25nPjIxOjQwIHRvIDIxOjU1LCBoaXMgZmlyc3QgYnJlYWsuPC9zdHJvbmc+IFdpdGggYSBtYWdpY2lhblx1MjAxOXMgdG9vbHMgaGUgb3BlbnMgdGhlIHBhY2ssIHBhaW50cyB0aGUgY29ybmVycyBvZiBhbGwgNTIgY2FyZHMgd2l0aCBob21lLW1hZGUgZm94Z2xvdmUgZXh0cmFjdCAodGhlIDxpPkZpbmdlcmh1dDwvaT4gb2YgdGhlIGRyb3BwZXIgYm90dGxlKSBhbmQgcmVzZWFscyB0aGUgY2VsbG9waGFuZSB3aXRoIGEgZ2x1ZSBwZW4gYW5kIGhlYXQgc2VhbGVyLiBPbmx5IGEgc2Vjb25kIGxpbmUgb2YgZ2x1ZSBnaXZlcyBpdCBhd2F5LjwvbGk+PGxpPjxzdHJvbmc+QWJvdXQgMjI6NTAuPC9zdHJvbmc+IEF0IHRoZSBmaW5hbCB0YWJsZSBoZSBtYWtlcyBJc2FiZWxsYVx1MjAxOXMgd2VkZGluZyByaW5nIHZhbmlzaCBpbnRvIE5pa29sYWlcdTIwMTlzIGNoYW1wYWduZS4gV2hpbGUgZXZlcnkgZXllIGlzIG9uIHRoZSBnbGFzcywgaGlzIGxlZnQgaGFuZCBsaWZ0cyB0aGUga2V5Y2FyZCBvdXQgb2YgaGVyIGNsdXRjaCBvbiB0aGUgcmFpbC48L2xpPjxsaT48c3Ryb25nPjIzOjA1Ljwvc3Ryb25nPiBIaXMgc2Vjb25kIGJyZWFrLiBUaGUgc3RhZmYgY29ycmlkb3IgYW5kIHRoZSBwcml2YXRlIHN0YWlycyBhcmUgNDAgc2Vjb25kcyBhd2F5LiBIZSBwdWxscyBvbiBibGFjayBnbG92ZXMgYW5kIGEgd2hpdGUgQmF1dGEgbWFzaywgb25lIG9mIHNpeHR5IGhhbmRlZCBvdXQgdG8gZ3Vlc3RzLjwvbGk+PGxpPjxzdHJvbmc+MjM6MTEuPC9zdHJvbmc+IENhbWVyYSAwNCByZWNvcmRzIGEgbWFza2VkIGZpZ3VyZSBvZiAxLjgzIG0gaW4gYSB0dXhlZG8sIGhvbGRpbmcgYSBjYXJkIHRvIHRoZSByZWFkZXIgd2l0aCB0aGUgbGVmdCBoYW5kLiBUaGUgbG9nIHNheXMgSS4gVkFMTU9OVCwgYnV0IElzYWJlbGxhIGlzIG9uIHN0YWdlIGluIGZyb250IG9mIHRocmVlIGh1bmRyZWQgcGVvcGxlLCBhcyBSXHUwMGU5bXlcdTIwMTlzIHBob3RvZ3JhcGhzIHByb3ZlIGF0IDIzOjAzLCAyMzoxNCBhbmQgMjM6MTguPC9saT48bGk+PHN0cm9uZz4yMzoxMSB0byAyMzoxNC48L3N0cm9uZz4gSW5zaWRlLCBoZSBzd2FwcyB0aGUgc2VhbGVkIGRlY2sgTWFyY28gbGVmdCBvbiB0aGUgYmxvdHRlciwgVkMtMDkxNywgZm9yIGhpcyBwb2lzb25lZCBWQy0wNDMxIGluIGl0cyBpZGVudGljYWwgd3JhcHBlciwgdG91Y2hlcyBub3RoaW5nIGVsc2UgYW5kIHNsaXBzIG91dC48L2xpPjxsaT48c3Ryb25nPjIzOjIwLjwvc3Ryb25nPiBCYWNrIGF0IHRoZSB0YWJsZSwgb3V0IG9mIGJyZWF0aCBhbmQgcGluayBpbiB0aGUgZmFjZSwgYXMgQW5hIG5vdGljZWQuPC9saT48bGk+PHN0cm9uZz4yMzoyOS48L3N0cm9uZz4gVmljdG9yIGNvbWVzIHVwIGZvciB0aGUgTGFzdCBIYW5kLiBIZSBicmVha3MgdGhlIHNlYWwsIGRlYWxzIGhpcyBzb2xpdGFpcmUgYW5kLCBhcyBoZSBoYXMgZm9yIGZvcnR5IHllYXJzLCBsaWNrcyBoaXMgdGh1bWIgYmVmb3JlIGV2ZXJ5IGNhcmQuIEVhY2ggbGljayBjYXJyaWVzIGEgbGl0dGxlIG1vcmUgcG9pc29uLiBIZSBkaWVzIGF0IHRoZSBkZXNrIGJldHdlZW4gMjM6NDAgYW5kIG1pZG5pZ2h0LjwvbGk+PGxpPjxzdHJvbmc+QWJvdXQgMjM6MzUuPC9zdHJvbmc+IElzYWJlbGxhIGtub2NrcyBoZXIgY2x1dGNoIG9mZiB0aGUgcmFpbC4gVG9iaWFzIHBpY2tzIGl0IHVwIGFuZCBoYW5kcyBpdCBiYWNrIHdpdGggdGhlIGtleWNhcmQgYWxyZWFkeSBpbnNpZGUuIEF0IDAwOjMwIHNoZSBnaXZlcyBpdCB0byB0aGUgcG9saWNlIHdpdGhvdXQga25vd2luZyBpdCB3YXMgZXZlciBnb25lLjwvbGk+PGxpPjxzdHJvbmc+QWZ0ZXIgbWlkbmlnaHQuPC9zdHJvbmc+IE5vYm9keSBtYXkgbGVhdmUgb25jZSB0aGUgYnVpbGRpbmcgaXMgc2VhbGVkIGF0IDAwOjE1LCBzbyB0aGUgdW50b3VjaGVkIGRlY2sgVkMtMDkxNywgdGhlIG1hc2ssIHRoZSBnbG92ZXMgYW5kIHRoZSBlbXB0eSBib3R0bGUgYXJlIHN0aWxsIGluIGxvY2tlciAyMSB3aGVuIHRoZSBwb2xpY2Ugb3BlbiBpdC48L2xpPjwvb2w+In0sIHsidGl0bGUiOiAiVGhlIGNsdWVzIHRoYXQgcG9pbnQgdG8gaGltIiwgImh0bWwiOiAiPHVsPjxsaT5IZSBoYWQgdGhlIGhlaWdodDogMS44NCBtIGluIGhpcyBzaG9lcywgYW5kIHRoZSBjYW1lcmEgbWVhc3VyZWQgMS44MyBtLCBnaXZlIG9yIHRha2UgMiBjbS48L2xpPjxsaT5IZSBkZWFscyBsZWZ0LWhhbmRlZCwgYW5kIHRoZSBmaWd1cmUgb24gY2FtZXJhIDA0IGhvbGRzIHRoZSBjYXJkIGluIHRoZSBsZWZ0IGhhbmQuPC9saT48bGk+SGlzIGJyZWFrIHJhbiBmcm9tIDIzOjA1IHRvIDIzOjIwLCBleGFjdGx5IHdoZW4gdGhlIG9mZmljZSB3YXMgZW50ZXJlZCwgYW5kIGhpcyB0ZXJyYWNlIGFsaWJpIGhhcyBubyB3aXRuZXNzIGFuZCBubyBjYW1lcmEuPC9saT48bGk+SGUgaGFkIGhpcyBoYW5kcyBuZWFyIElzYWJlbGxhXHUyMDE5cyBjbHV0Y2ggdHdpY2U6IHRoZSByaW5nIHRyaWNrIGJlZm9yZSAyMzowMCBhbmQgdGhlIHBpY2stdXAgYXQgMjM6MzUuPC9saT48bGk+VGhlIHdyYXBwZXIgaW4gVmljdG9yXHUyMDE5cyBiaW4gY2FycmllcyBzZWFsIFZDLTA0MzEsIGEgZGVjayBpc3N1ZWQgdG8gaGlzIHRhYmxlIGFuZCB3cml0dGVuIG9mZiBiZWNhdXNlIG9mIGEgc3BpbGwgbm9ib2R5IGVsc2Ugc2F3LjwvbGk+PGxpPlRoZSByZWFsIGRlY2ssIFZDLTA5MTcsIHdhcyBzZWFsZWQgaW4gaGlzIGxvY2tlciwgd2l0aCB0aGUgQmF1dGEgbWFzaywgdGhlIGdsb3ZlcywgdGhlIHJlc2VhbGluZyBraXQgYW5kIGFuIGVtcHR5IGJvdHRsZSBsYWJlbGxlZCA8aT5GaW5nZXJodXQ8L2k+LCBHZXJtYW4gZm9yIGZveGdsb3ZlLjwvbGk+PGxpPkhpcyBmYXRoZXIgd2FzIHRoZSBHcmV5IEdob3N0OiB0aGUgcGhvdG9ncmFwaCBpbiBoaXMgbG9ja2VyIHdpdGggaXRzIEdlcm1hbiBkZWRpY2F0aW9uLCB0aGUgVmFuaXNoaW5nIFJpbmcsIGFuZCBWaWN0b3JcdTIwMTlzIG93biBub3RlYm9vazogXHUyMDFjU2FtZSBoYW5kcy4gU2FtZSBzbWlsZS4gRXZlbiB0aGUgc2FtZSB0cmljayB3aXRoIHRoZSByaW5nLlx1MjAxZDwvbGk+PC91bD4ifSwgeyJ0aXRsZSI6ICJXaHkgaXQgd2Fzblx1MjAxOXQgdGhlIG90aGVycyIsICJodG1sIjogIjx1bD48bGk+PHN0cm9uZz5Jc2FiZWxsYSBWYWxtb250PC9zdHJvbmc+IGhhZCB0aGUgYmlnZ2VzdCBtb25leSBtb3RpdmUsIHNpbmNlIHRoZSBuZXcgd2lsbCB3b3VsZCBoYXZlIGN1dCBoZXIgZG93biB0byBhIHZpbGxhIGFuZCBhbiBhbGxvd2FuY2UuIEJ1dCBzaGUgd2FzIG9uIHN0YWdlIGZyb20gMjM6MDAgdG8gMjM6MjUsIGFuZCB0aGUgcGhvdG9ncmFwaGVyXHUyMDE5cyB0aW1lc3RhbXBzIHB1dCBoZXIgdGhlcmUgYXQgMjM6MDMsIDIzOjE0IGFuZCAyMzoxOC4gSGVyIGtleWNhcmQgd2FzIHVzZWQ7IHNoZSB3YXNuXHUyMDE5dC4gSGVyIHNlY3JldCB3YXMgdGhlIGFmZmFpciB3aXRoIE5pa29sYWkuPC9saT48bGk+PHN0cm9uZz5NYXJjbyBTYW50b3JvPC9zdHJvbmc+IHdhcyBzdGVhbGluZyBmcm9tIHRoZSBjb3VudCwgYW5kIFZpY3RvciBrbmV3LiBCdXQgaGUgd2FzIGluIHRoZSBDYWdlIHdpdGggTWlyZWxhIGZyb20gMjM6MDUgdG8gMjM6MTksIGNvbmZpcm1lZCBieSBjYW1lcmEgMDIsIGFuZCBhdCAxLjc3IG0gaGUgaXMgdG9vIHNob3J0IGZvciB0aGUgZmlndXJlIG9uIGNhbWVyYS48L2xpPjxsaT48c3Ryb25nPkRyIExlb3BvbGQgS3JhdXM8L3N0cm9uZz4gb3dlZCBWaWN0b3IgXHUyMGFjMzgwLDAwMCBhbmQgZmFjZWQgdGhlIG1lZGljYWwgYm9hcmQuIEJ1dCBoZSB3YXMgZGVhbHQgaW50byBldmVyeSBoYW5kIGF0IHRoZSBmaW5hbCB0YWJsZSwgaGUgaXMgMS43MSBtLCBhbmQgdGhlIHBvaXNvbiB3YXMgYSBjcnVkZSBwbGFudCBleHRyYWN0LCBub3QgaGlzIGRpZ294aW4gdGFibGV0cy48L2xpPjxsaT48c3Ryb25nPk5pa29sYWkgUGV0cm92PC9zdHJvbmc+IHdhbnRlZCB0aGUgY2FzaW5vIGFuZCBWaWN0b3JcdTIwMTlzIHdpZmUuIEJ1dCBoZSBwbGF5ZWQgZXZlcnkgaGFuZCBmcm9tIDIzOjAwIHRvIDIzOjMwLCBhbmQgYXQgMS45NSBtIGhlIGNvdWxkIG5ldmVyIHBhc3MgZm9yIGEgMS44MyBtIGZpZ3VyZS48L2xpPjxsaT48c3Ryb25nPkNlbGVzdGUgTW9yZWF1PC9zdHJvbmc+IHdhcyB0aGUgcmVkIGhlcnJpbmcuIEhlciBoZWlnaHQgZml0cywgaGVyIGZhdGhlciB3YXMgYSBwZXJmb3JtZXIgd2hvIGRpZWQgd2hlbiBzaGUgd2FzIG5pbmUsIGFuZCBzaGUgd2FudGVkIG91dCBvZiBoZXIgY29udHJhY3QuIEJ1dCBzaGUgd2FzIHNpbmdpbmcgdGhlIGR1ZXQgd2hlbiB0aGUgb2ZmaWNlIHdhcyBlbnRlcmVkLCB0aGUgR3JleSBHaG9zdFx1MjAxOXMgY2hpbGQgd2FzIGEgc29uLCBhbmQgaGVyIGZhdGhlciBwbGF5ZWQgdHJ1bXBldCBpbiBhIGNpcmN1cyBiYW5kLjwvbGk+PC91bD4ifSwgeyJ0aXRsZSI6ICJFcGlsb2d1ZSIsICJodG1sIjogIjxwPlRvYmlhcyBHcmV5IG1hZGUgbm8gYXR0ZW1wdCB0byBkZW55IGl0IG9uY2UgRHVyZXQgbGFpZCB0aGUgcGhvdG9ncmFwaCBmcm9tIGhpcyBsb2NrZXIgYmVzaWRlIHRoZSAyMDA0IG5ld3NwYXBlci4gSGUgYXNrZWQgaGVyIG9uZSBxdWVzdGlvbjogd2FzIGl0IHRydWUgdGhhdCBWaWN0b3IgaGFkIG1lYW50IHRvIGxlYXZlIGhpbSB0aGUgY2FzaW5vPyBXaGVuIHNoZSBzYWlkIHllcywgaGUgZGlkblx1MjAxOXQgc3BlYWsgYWdhaW4gZm9yIGFuIGhvdXIuPC9wPjxwPlRoZSBWZWx2ZXQgQ3Jvd24gc3RheWVkIGRhcmsgZm9yIGEgbW9udGguIFdoZW4gaXQgcmVvcGVuZWQsIGl0cyBuZXcgb3duZXIsIElzYWJlbGxhIFZhbG1vbnQsIGhhZCBodW5nIGEgcG9ydHJhaXQgaW4gdGhlIGxvYmJ5OiBhIHRhbGwgbWFuIGluIGEgZ3JleSB0YWlsY29hdCBwdWxsaW5nIGEgcmluZyBvdXQgb2YgdGhpbiBhaXIuIFRoZSBicmFzcyBwbGFxdWUgYmVuZWF0aCBpdCByZWFkczogPGk+QW50b24gR3JhdWVyLCB0aGUgR3JleSBHaG9zdC4gSGUgbmV2ZXIgY2hlYXRlZCBhdCBjYXJkcy48L2k+PC9wPjxwPkNoaWVmIEluc3BlY3RvciBEdXJldCBzZW5kcyBoZXIgdGhhbmtzLCBhbmQgaGVyIG9waW5pb24gdGhhdCB0aGUgdHdvIG9mIHlvdSBoYXZlIGVhcm5lZCBhIHZlcnkgZ29vZCBkaW5uZXIuPC9wPiJ9XX0=';
+
+</script>
+<script>
+/* Velvet Crown: all sound is generated live, no audio files. */
+window.Sound = (function () {
+  'use strict';
+  var ctx = null, master, music, sfx, timer = null, nextTime = 0, beat = 0, playing = false, sfxOn = true, noiseBuf = null;
+  var SPB = 60 / 72;
+  var mtof = function (m) { return 440 * Math.pow(2, (m - 69) / 12); };
+
+  function init() {
+    if (ctx) return true;
+    var AC = window.AudioContext || window.webkitAudioContext;
+    if (!AC) return false;
+    try { ctx = new AC(); } catch (e) { return false; }
+    master = ctx.createGain(); master.gain.value = .9; master.connect(ctx.destination);
+    music = ctx.createGain(); music.gain.value = 0; music.connect(master);
+    var d = ctx.createDelay(1), fb = ctx.createGain(), wet = ctx.createGain(), lp = ctx.createBiquadFilter();
+    d.delayTime.value = SPB * .75; fb.gain.value = .26; wet.gain.value = .2; lp.type = 'lowpass'; lp.frequency.value = 2200;
+    music.connect(d); d.connect(lp); lp.connect(fb); fb.connect(d); lp.connect(wet); wet.connect(master);
+    sfx = ctx.createGain(); sfx.gain.value = .55; sfx.connect(master);
+    return true;
+  }
+  function resume() { if (ctx && ctx.state === 'suspended') ctx.resume(); }
+
+  function ep(freq, t, dur, vel, dest) {
+    var o1 = ctx.createOscillator(), o2 = ctx.createOscillator(), g = ctx.createGain(), g2 = ctx.createGain(), f = ctx.createBiquadFilter();
+    o1.type = 'sine'; o2.type = 'sine'; o1.frequency.value = freq; o2.frequency.value = freq * 2.005;
+    g2.gain.value = .18; f.type = 'lowpass'; f.frequency.value = 1800;
+    o1.connect(g); o2.connect(g2); g2.connect(g); g.connect(f); f.connect(dest || music);
+    g.gain.setValueAtTime(.0001, t); g.gain.exponentialRampToValueAtTime(vel, t + .012);
+    g.gain.exponentialRampToValueAtTime(vel * .35, t + .35); g.gain.exponentialRampToValueAtTime(.0001, t + dur);
+    o1.start(t); o2.start(t); o1.stop(t + dur + .05); o2.stop(t + dur + .05);
+  }
+  function bass(freq, t, dur) {
+    var o = ctx.createOscillator(), g = ctx.createGain(), f = ctx.createBiquadFilter();
+    o.type = 'triangle'; o.frequency.value = freq; f.type = 'lowpass'; f.frequency.value = 600;
+    o.connect(f); f.connect(g); g.connect(music);
+    g.gain.setValueAtTime(.0001, t); g.gain.exponentialRampToValueAtTime(.32, t + .02);
+    g.gain.exponentialRampToValueAtTime(.1, t + dur * .6); g.gain.exponentialRampToValueAtTime(.0001, t + dur);
+    o.start(t); o.stop(t + dur + .05);
+  }
+  function noise() {
+    if (noiseBuf) return noiseBuf;
+    var len = ctx.sampleRate; noiseBuf = ctx.createBuffer(1, len, ctx.sampleRate);
+    var data = noiseBuf.getChannelData(0);
+    for (var i = 0; i < len; i++) data[i] = Math.random() * 2 - 1;
+    return noiseBuf;
+  }
+  function hiss(t, vel, dest, dur, freq) {
+    var s = ctx.createBufferSource(), f = ctx.createBiquadFilter(), g = ctx.createGain();
+    s.buffer = noise(); f.type = 'bandpass'; f.frequency.value = freq || 6000; f.Q.value = .8;
+    s.connect(f); f.connect(g); g.connect(dest || music); dur = dur || .18;
+    g.gain.setValueAtTime(.0001, t); g.gain.exponentialRampToValueAtTime(vel, t + .01); g.gain.exponentialRampToValueAtTime(.0001, t + dur);
+    s.start(t); s.stop(t + dur + .02);
+  }
+
+  /* Dm9, G13, Cmaj9, A7(b9): two bars each, with a walking bass. */
+  var CH = [[53, 57, 60, 64], [53, 57, 59, 64], [52, 55, 59, 62], [55, 58, 61, 64]];
+  var BASS = [[38, 41, 45, 41], [38, 45, 43, 44], [43, 47, 50, 47], [43, 41, 38, 37], [36, 40, 43, 40], [36, 40, 43, 44], [45, 49, 52, 49], [45, 43, 40, 39]];
+  function schedule() {
+    while (nextTime < ctx.currentTime + .4) {
+      var bar = Math.floor(beat / 4) % 8, b = beat % 4, chord = CH[Math.floor(bar / 2)];
+      bass(mtof(BASS[bar][b]), nextTime, SPB * .95);
+      if (b === 0) chord.forEach(function (m, i) { ep(mtof(m), nextTime + i * .012, SPB * 2.6, .065); });
+      if (b === 1) chord.forEach(function (m) { ep(mtof(m), nextTime + SPB * .66, SPB * 1.2, .04); });
+      if (b === 1 || b === 3) hiss(nextTime, .045);
+      hiss(nextTime + SPB * .66, .018);
+      nextTime += SPB; beat++;
+    }
+  }
+  function fx(fn) { if (!sfxOn || !init()) return; resume(); try { fn(ctx.currentTime); } catch (e) { /* ignore */ } }
+  function thudAt(t) {
+    var o = ctx.createOscillator(), g = ctx.createGain();
+    o.type = 'sine'; o.frequency.setValueAtTime(140, t); o.frequency.exponentialRampToValueAtTime(45, t + .25);
+    g.gain.setValueAtTime(.5, t); g.gain.exponentialRampToValueAtTime(.0001, t + .35);
+    o.connect(g); g.connect(sfx); o.start(t); o.stop(t + .4); hiss(t, .2, sfx, .12, 900);
+  }
+
+  return {
+    unlock: function () { if (init()) resume(); },
+    musicOn: function () {
+      if (!init()) return; resume(); if (playing) return; playing = true;
+      music.gain.cancelScheduledValues(ctx.currentTime); music.gain.setTargetAtTime(.55, ctx.currentTime, .8);
+      nextTime = ctx.currentTime + .1; clearInterval(timer); timer = setInterval(schedule, 100);
+    },
+    musicOff: function () {
+      if (!ctx || !playing) return; playing = false;
+      music.gain.setTargetAtTime(0, ctx.currentTime, .3);
+      setTimeout(function () { if (!playing) { clearInterval(timer); timer = null; } }, 1500);
+    },
+    setSfx: function (v) { sfxOn = !!v; },
+    flip: function () { fx(function (t) { hiss(t, .25, sfx, .09, 3500); }); },
+    deal: function (n) { fx(function (t) { for (var i = 0; i < (n || 1); i++) hiss(t + i * .09, .22, sfx, .08, 3000 + (i % 3) * 600); }); },
+    click: function () {
+      fx(function (t) {
+        var o = ctx.createOscillator(), g = ctx.createGain(); o.type = 'square'; o.frequency.value = 1200;
+        g.gain.setValueAtTime(.04, t); g.gain.exponentialRampToValueAtTime(.0001, t + .04); o.connect(g); g.connect(sfx); o.start(t); o.stop(t + .05);
+      });
+    },
+    chime: function () { fx(function (t) { [72, 76, 79, 84, 88].forEach(function (m, i) { ep(mtof(m), t + i * .09, 1.6, .12, sfx); }); }); },
+    wrong: function () {
+      fx(function (t) {
+        [0, .16].forEach(function (d) {
+          var o = ctx.createOscillator(), g = ctx.createGain(), f = ctx.createBiquadFilter();
+          o.type = 'sawtooth'; o.frequency.value = d ? 98 : 110; f.type = 'lowpass'; f.frequency.value = 500;
+          o.connect(f); f.connect(g); g.connect(sfx);
+          g.gain.setValueAtTime(.0001, t + d); g.gain.exponentialRampToValueAtTime(.16, t + d + .02); g.gain.exponentialRampToValueAtTime(.0001, t + d + .14);
+          o.start(t + d); o.stop(t + d + .16);
+        });
+      });
+    },
+    thud: function () { fx(function (t) { thudAt(t); }); },
+    safe: function () { fx(function (t) { for (var i = 0; i < 4; i++) hiss(t + i * .11, .3, sfx, .04, 2200); thudAt(t + .5); }); },
+    ring: function () {
+      fx(function (t) {
+        for (var r = 0; r < 2; r++) for (var k = 0; k < 14; k++) ep(k % 2 ? 1320 : 1175, t + r * 1.1 + k * .05, .09, .05, sfx);
+      });
+    },
+    roll: function (sec) {
+      fx(function (t) {
+        var s = ctx.createBufferSource(), f = ctx.createBiquadFilter(), g = ctx.createGain(), lfo = ctx.createOscillator(), lg = ctx.createGain();
+        s.buffer = noise(); s.loop = true; f.type = 'bandpass'; f.frequency.value = 260; f.Q.value = .7;
+        lfo.frequency.value = 17; lg.gain.value = .1; lfo.connect(lg); lg.connect(g.gain);
+        g.gain.setValueAtTime(.0001, t); g.gain.linearRampToValueAtTime(.2, t + sec);
+        s.connect(f); f.connect(g); g.connect(sfx); s.start(t); lfo.start(t); s.stop(t + sec); lfo.stop(t + sec);
+        hiss(t + sec, .45, sfx, 1.4, 4500);
+        [50, 57, 62, 65].forEach(function (m) { ep(mtof(m), t + sec, 2.2, .18, sfx); });
+      });
+    }
+  };
+})();
+
+</script>
+<script>
+/* Velvet Crown: game engine, part 1. */
+(function () {
+  'use strict';
+  var C = window.CASE, Art = window.Art, Snd = window.Sound;
+  var $ = function (s, r) { return (r || document).querySelector(s); };
+  var $$ = function (s, r) { return Array.prototype.slice.call((r || document).querySelectorAll(s)); };
+  var KEY = 'velvetCrown.save.v1';
+  var REDUCED = !!(window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches);
+
+  function decode(b64) {
+    try { return JSON.parse(decodeURIComponent(escape(atob(b64)))); } catch (e) { return null; }
+  }
+  function fresh() {
+    return { v: 1, names: ['', ''], started: false, elapsed: 0, unlocked: ['A'], read: {}, marks: {}, notes: '', cipher: {},
+      hints: { B: 0, C: 0, F: 0 }, gaveUp: {}, accusation: null, music: false, sfx: true, tab: 'file' };
+  }
+  function load() {
+    try {
+      var raw = localStorage.getItem(KEY);
+      if (raw) { var o = JSON.parse(raw), f = fresh(); for (var k in f) if (!(k in o)) o[k] = f[k]; return o; }
+    } catch (e) { /* private mode or corrupt save */ }
+    return fresh();
+  }
+  var S = load();
+  function save() { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) { /* ignore */ } }
+
+  var VC = window.VC = { $: $, $$: $$, REDUCED: REDUCED, save: save, SECRET: decode(window.VC_SECRET || '') };
+  VC.state = function () { return S; };
+  VC.reset = function () { try { localStorage.removeItem(KEY); } catch (e) { /* ignore */ } S = fresh(); };
+
+  /* Screens and clock */
+  var clockTimer = null, lastTick = 0, ticks = 0;
+  VC.fmt = function (ms) {
+    var s = Math.floor(ms / 1000), h = Math.floor(s / 3600), m = Math.floor(s % 3600 / 60), x = s % 60;
+    return (h ? h + ':' + String(m).padStart(2, '0') : m) + ':' + String(x).padStart(2, '0');
+  };
+  function renderClock() { var el = $('#clock'); if (el) el.textContent = VC.fmt(S.elapsed); }
+  function startClock() {
+    if (clockTimer) return; lastTick = Date.now(); renderClock();
+    clockTimer = setInterval(function () {
+      var now = Date.now();
+      if (!document.hidden && !S.accusation) S.elapsed += now - lastTick;
+      lastTick = now; renderClock(); if (++ticks % 15 === 0) save();
+    }, 1000);
+  }
+  function stopClock() { clearInterval(clockTimer); clockTimer = null; save(); }
+  VC.show = function (id) {
+    $$('.screen').forEach(function (el) { var on = el.id === id; el.hidden = !on; el.classList.toggle('is-active', on); });
+    window.scrollTo(0, 0);
+    if (id === 'screen-game') startClock(); else stopClock();
+  };
+
+  var toastTimer;
+  VC.toast = function (msg) {
+    var t = $('#toast'); t.textContent = msg; t.classList.add('is-on');
+    clearTimeout(toastTimer); toastTimer = setTimeout(function () { t.classList.remove('is-on'); }, 2800);
+  };
+
+  /* Modal */
+  var lastFocus = null;
+  VC.openModal = function (html, opts) {
+    opts = opts || {};
+    var m = $('#modal'), body = $('#modal-body');
+    if (m.hidden) lastFocus = document.activeElement;
+    body.innerHTML = html; $('#modal-nav').innerHTML = opts.nav || '';
+    m.hidden = false; document.body.classList.add('modal-open');
+    $('#modal-sheet').scrollTop = 0;
+    m.classList.remove('is-open'); void m.offsetWidth; m.classList.add('is-open');
+    if (opts.after) opts.after(body);
+    setTimeout(function () { $('#modal-close').focus({ preventScroll: true }); }, 40);
+  };
+  VC.closeModal = function () {
+    var m = $('#modal'); if (m.hidden) return;
+    m.hidden = true; m.classList.remove('is-open'); document.body.classList.remove('modal-open');
+    $('#modal-body').innerHTML = ''; $('#modal-nav').innerHTML = '';
+    if (lastFocus && document.body.contains(lastFocus)) { try { lastFocus.focus({ preventScroll: true }); } catch (e) { /* ignore */ } }
+  };
+  VC.confirm = function (title, text, yes, onYes) {
+    VC._onYes = onYes;
+    VC.openModal('<div class="confirm"><h3>' + title + '</h3><p>' + text + '</p><div class="confirm-actions">' +
+      '<button type="button" class="btn btn-ghost" data-close>Not yet</button><button type="button" class="btn btn-gold" data-confirm-yes>' + yes + '</button></div></div>');
+  };
+
+  /* Game header and case file */
+  VC.renderTop = function () {
+    var n = S.names.filter(Boolean).map(C.esc);
+    $('#names-line').textContent = n.length ? 'Detectives ' + n.join(' and ') : 'Case 1114';
+    $('#pips').innerHTML = C.envelopes.map(function (e) {
+      var open = S.unlocked.indexOf(e.id) > -1;
+      return '<span class="pip' + (open ? ' is-open' : '') + '" title="Envelope ' + e.id + (open ? ', open' : ', sealed') + '">' + e.id + '</span>';
+    }).join('');
+    var acc = $('#btn-accuse'); acc.hidden = S.unlocked.indexOf('C') < 0;
+    acc.textContent = S.accusation ? 'See the solution' : 'Make the accusation';
+    $('#btn-music').setAttribute('aria-pressed', String(S.music));
+    $('#btn-sfx').setAttribute('aria-pressed', String(S.sfx));
+  };
+  function evCard(ev, i, deal) {
+    var rot = ((ev.id.charCodeAt(0) * 7 + ev.id.charCodeAt(1) * 13) % 7 - 3) * .55;
+    return '<button type="button" class="ev ev-' + ev.kind + (deal ? ' is-dealt' : '') + '" data-ev="' + ev.id + '" style="--r:' + rot.toFixed(2) + 'deg;--i:' + i + '">' +
+      '<span class="ev-art">' + Art.icon(ev.kind) + '</span><span class="ev-no">' + ev.id + '</span>' +
+      '<span class="ev-title">' + ev.title + '</span><span class="ev-blurb">' + ev.blurb + '</span>' +
+      (S.read[ev.id] ? '' : '<span class="ev-new">Unread</span>') + '</button>';
+  }
+  VC.renderFile = function (dealEnv) {
+    var html = '', next = null;
+    C.envelopes.forEach(function (e) {
+      if (S.unlocked.indexOf(e.id) > -1) {
+        var items = C.evidence.filter(function (ev) { return ev.env === e.id; });
+        html += '<section class="env" data-env="' + e.id + '"><header class="env-head"><span class="seal" aria-hidden="true">' + e.id + '</span>' +
+          '<div><h2>Envelope ' + e.id + ': ' + e.title + '</h2><p>' + e.line + '</p></div></header><div class="ev-grid">' +
+          items.map(function (ev, i) { return evCard(ev, i, dealEnv === e.id); }).join('') + '</div></section>';
+      } else if (!next) {
+        next = e; html += '<section class="env env-locked" data-env="' + e.id + '">' + VC.lockPanel(e) + '</section>';
+      } else {
+        html += '<section class="env env-sealed"><header class="env-head"><span class="seal seal-dim" aria-hidden="true">' + e.id + '</span>' +
+          '<div><h2>Envelope ' + e.id + '</h2><p>Sealed until envelope ' + next.id + ' is open.</p></div></header></section>';
+      }
+    });
+    if (S.unlocked.indexOf('C') > -1) html += VC.finalPanel();
+    $('#file').innerHTML = html;
+    if (VC.afterFile) VC.afterFile();
+  };
+  VC.setTab = function (t) {
+    S.tab = t; save();
+    $$('[data-tab]').forEach(function (b) { var on = b.dataset.tab === t; b.setAttribute('aria-selected', String(on)); b.classList.toggle('is-on', on); });
+    $$('.panel').forEach(function (p) { p.hidden = p.dataset.panel !== t; });
+  };
+  VC.renderGame = function (dealEnv) {
+    VC.renderTop(); VC.renderFile(dealEnv); VC.renderSuspects(); VC.renderNotes(); VC.setTab(S.tab || 'file');
+  };
+  VC.unlock = function (id) {
+    if (S.unlocked.indexOf(id) < 0) S.unlocked.push(id);
+    save(); VC.renderTop(); VC.setTab('file'); VC.renderFile(id);
+    var sec = $('[data-env="' + id + '"]');
+    if (sec) sec.scrollIntoView({ behavior: REDUCED ? 'auto' : 'smooth', block: 'start' });
+    Snd.deal(7); VC.toast('Envelope ' + id + ' is open.');
+  };
+
+  /* Evidence viewer */
+  VC.openEvidence = function (id, jumpTo) {
+    var ev = C.evidence.filter(function (e) { return e.id === id; })[0];
+    if (!ev || S.unlocked.indexOf(ev.env) < 0) return;
+    var list = C.evidence.filter(function (e) { return S.unlocked.indexOf(e.env) > -1; });
+    var i = list.indexOf(ev), prev = list[i - 1], next = list[i + 1];
+    var nav = (prev ? '<button type="button" class="btn btn-ghost" data-open="' + prev.id + '">Previous: ' + prev.title + '</button>' : '<span></span>') +
+      (next ? '<button type="button" class="btn btn-ghost" data-open="' + next.id + '">Next: ' + next.title + '</button>' : '<span></span>');
+    VC.openModal('<p class="doc-label">Evidence ' + ev.id + '</p>' + ev.render({ names: S.names }), {
+      nav: nav,
+      after: function (root) {
+        initLoupe(root); initCipher(root);
+        if (jumpTo) { var el = document.getElementById(jumpTo); if (el) setTimeout(function () { el.scrollIntoView({ block: 'start' }); }, 60); }
+      }
+    });
+    if (!S.read[id]) {
+      S.read[id] = true; save();
+      var badge = $('[data-ev="' + id + '"] .ev-new'); if (badge) badge.remove();
+    }
+    Snd.flip();
+  };
+
+  function initLoupe(root) {
+    var wrap = $('[data-loupe]', root); if (!wrap) return;
+    var lens = $('.loupe', wrap), inner = $('.loupe-inner', wrap), btn = $('[data-loupe-toggle]', root);
+    var Z = 2.6, R = 95, on = !(window.matchMedia && matchMedia('(pointer: coarse)').matches);
+    function setOn(v) {
+      on = v; btn.setAttribute('aria-pressed', String(v)); btn.textContent = v ? 'Magnifier on' : 'Magnifier off';
+      wrap.classList.toggle('loupe-on', v); if (!v) lens.style.opacity = 0;
+    }
+    setOn(on);
+    btn.addEventListener('click', function () { setOn(!on); });
+    function move(e) {
+      if (!on) return;
+      var r = wrap.getBoundingClientRect(), x = e.clientX - r.left, y = e.clientY - r.top;
+      if (x < 0 || y < 0 || x > r.width || y > r.height) { lens.style.opacity = 0; return; }
+      lens.style.opacity = 1;
+      lens.style.transform = 'translate(' + (x - R) + 'px,' + (y - R) + 'px)';
+      inner.style.width = (r.width * Z) + 'px';
+      inner.style.transform = 'translate(' + (-(x * Z - R)) + 'px,' + (-(y * Z - R)) + 'px)';
+    }
+    wrap.addEventListener('pointermove', move);
+    wrap.addEventListener('pointerdown', move);
+    wrap.addEventListener('pointerleave', function () { lens.style.opacity = 0; });
+  }
+
+  function initCipher(root) {
+    var box = $('[data-cipher]', root); if (!box) return;
+    var inputs = $$('input', box);
+    inputs.forEach(function (inp) {
+      var i = +inp.dataset.i;
+      if (S.cipher[i]) inp.value = S.cipher[i];
+      inp.addEventListener('input', function () {
+        inp.value = inp.value.replace(/[^a-z]/gi, '').toUpperCase().slice(-1);
+        S.cipher[i] = inp.value; save();
+        if (inp.value && inputs[i + 1]) inputs[i + 1].focus();
+      });
+      inp.addEventListener('keydown', function (e) {
+        if (e.key === 'Backspace' && !inp.value && i > 0) { inputs[i - 1].focus(); e.preventDefault(); }
+        else if ((e.key === 'ArrowRight' || e.key === ' ') && inputs[i + 1]) { inputs[i + 1].focus(); e.preventDefault(); }
+        else if (e.key === 'ArrowLeft' && i > 0) { inputs[i - 1].focus(); e.preventDefault(); }
+      });
+    });
+    var clr = $('[data-cipher-clear]', root);
+    if (clr) clr.addEventListener('click', function () {
+      VC.confirm('Clear page 13?', 'This removes every letter you\u2019ve typed under the cards.', 'Clear the letters', function () {
+        S.cipher = {}; save(); VC.openEvidence('B3');
+      });
+    });
+  }
+})();
+
+</script>
+<script>
+/* Velvet Crown: game engine, part 2. */
+(function () {
+  'use strict';
+  var VC = window.VC, C = window.CASE, Art = window.Art, Snd = window.Sound;
+  var $ = VC.$, $$ = VC.$$, X = VC.SECRET, REDUCED = VC.REDUCED;
+  var S = VC.state;
+
+  /* Locks */
+  var PHONE = '<svg viewBox="0 0 120 120" aria-hidden="true"><rect x="14" y="58" width="92" height="48" rx="10" fill="#1b1411" stroke="#c9a227" stroke-width="3"/>' +
+    '<circle cx="60" cy="82" r="17" fill="none" stroke="#c9a227" stroke-width="3"/><circle cx="60" cy="82" r="5" fill="#c9a227"/>' +
+    '<path d="M10 44c0-18 22-26 50-26s50 8 50 26l-4 10H86l-4-12H38l-4 12H14z" fill="#6a0f24" stroke="#c9a227" stroke-width="3"/></svg>';
+  VC.lockPanel = function (e) {
+    if (e.lock === 'safe') {
+      var keys = ['1', '2', '3', '4', '5', '6', '7', '8', '9', 'clear', '0', 'open'].map(function (k) {
+        return '<button type="button" class="key' + (k.length > 1 ? ' key-word' : '') + '" data-key="' + k + '">' + (k === 'clear' ? 'Clear' : k === 'open' ? 'Open' : k) + '</button>';
+      }).join('');
+      return '<div class="lock lock-safe"><div class="safe" id="safe"><div class="safe-door"><div class="safe-screen" id="safe-screen" aria-live="polite">\u2013 \u2013 \u2013 \u2013</div>' +
+        '<div class="safe-keys">' + keys + '</div></div></div>' +
+        '<div class="lock-copy"><span class="seal" aria-hidden="true">B</span><h2>Envelope B: Victor\u2019s safe</h2>' +
+        '<p>A four-digit keypad behind the painting. Victor hid the code for anyone who knew him well, and everything you need is in envelope A.</p>' +
+        '<p class="lock-status" id="safe-msg" aria-live="polite"></p><button type="button" class="btn btn-ghost" data-hints="B">Get a hint</button></div></div>';
+    }
+    return '<div class="lock lock-call"><div class="phone">' + PHONE + '</div><div class="lock-copy"><span class="seal" aria-hidden="true">C</span>' +
+      '<h2>Envelope C: call Chief Inspector Duret</h2>' +
+      '<p>Duret will send the lab results and search the lockers as soon as you can tell her what page 13 of Victor\u2019s notebook says.</p>' +
+      '<form class="call-form" id="call-form" autocomplete="off"><label for="call-input">Page 13 says</label>' +
+      '<input id="call-input" type="text" placeholder="Type the decoded message"><button type="submit" class="btn btn-gold">Call the inspector</button></form>' +
+      '<p class="lock-status" id="call-msg" aria-live="polite"></p><button type="button" class="btn btn-ghost" data-hints="C">Get a hint</button></div></div>';
+  };
+  VC.finalPanel = function () {
+    var done = !!S().accusation;
+    return '<section class="env env-final"><div class="final-card"><h2>' + (done ? 'Case closed' : 'Ready to name the killer?') + '</h2>' +
+      '<p>' + (done ? 'You made your accusation. The solution is here whenever you want to read it again.' :
+        'When you both agree on who killed Victor, how it was done and why, make your accusation. You get one.') + '</p>' +
+      '<div class="final-actions"><button type="button" class="btn btn-gold" data-go-accuse>' + (done ? 'See the solution' : 'Make the accusation') + '</button>' +
+      (done ? '' : '<button type="button" class="btn btn-ghost" data-hints="F">Get a hint</button>') + '</div></div></section>';
+  };
+
+  var code = '', busy = false;
+  function paintSafe() { var s = $('#safe-screen'); if (s) s.textContent = (code + '\u2013\u2013\u2013\u2013').slice(0, 4).split('').join(' '); }
+  VC.pressKey = function (k) {
+    if (busy || !$('#safe')) return;
+    if (k === 'clear') code = '';
+    else if (k === 'back') code = code.slice(0, -1);
+    else if (k === 'open') { tryCode(); return; }
+    else if (code.length < 4) code += k;
+    Snd.click(); paintSafe();
+    if (code.length === 4) setTimeout(tryCode, 260);
+  };
+  function tryCode() {
+    if (busy || code.length < 4) return;
+    busy = true;
+    var safe = $('#safe'), msg = $('#safe-msg');
+    if (code === X.locks.B) {
+      safe.classList.add('is-open'); msg.textContent = 'A heavy click. The door swings open.'; Snd.safe();
+      setTimeout(function () { busy = false; code = ''; Snd.chime(); VC.unlock('B'); }, REDUCED ? 300 : 1500);
+    } else {
+      safe.classList.add('is-wrong'); msg.textContent = 'The safe stays shut. That isn\u2019t the code.'; Snd.wrong();
+      setTimeout(function () { safe.classList.remove('is-wrong'); code = ''; paintSafe(); busy = false; }, 700);
+    }
+  }
+  function norm(s) {
+    s = String(s || '').toUpperCase();
+    if (s.normalize) s = s.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+    return s.replace(/[^A-Z]/g, '');
+  }
+  VC.afterFile = function () {
+    code = ''; busy = false;
+    var f = $('#call-form');
+    if (f) f.addEventListener('submit', function (e) {
+      e.preventDefault();
+      var val = norm($('#call-input').value), msg = $('#call-msg');
+      if (!val) { msg.textContent = 'Type what page 13 says first.'; return; }
+      var ok = X.locks.C.some(function (k) { return val.indexOf(k) > -1; });
+      if (ok) {
+        $('#call-input').disabled = true; f.querySelector('button').disabled = true;
+        msg.textContent = 'Ringing\u2026'; Snd.ring();
+        setTimeout(function () { msg.textContent = X.callReply; }, REDUCED ? 200 : 2300);
+        setTimeout(function () { Snd.chime(); VC.unlock('C'); }, REDUCED ? 900 : 5200);
+      } else {
+        Snd.wrong();
+        msg.textContent = 'Duret: \u201cThat doesn\u2019t mean anything to me. Read the page again, card by card.\u201d';
+      }
+    });
+  };
+
+  /* Hints */
+  var hintFor = null;
+  function hintHtml(w) {
+    var list = X.hints[w], used = S().hints[w] || 0, h = '';
+    h += '<article class="doc doc-hints"><h3>' + (w === 'F' ? 'Hints for the accusation' : 'Hints for envelope ' + w) + '</h3>' +
+      '<p>Hints go from gentle to generous. Open one at a time.</p><ol class="hint-list">';
+    for (var i = 0; i < list.length; i++) {
+      if (i < used) h += '<li class="hint is-open">' + list[i] + '</li>';
+      else if (i === used) h += '<li class="hint"><button type="button" class="btn btn-small" data-hint-next>Show hint ' + (i + 1) + '</button></li>';
+      else h += '<li class="hint is-locked">Hint ' + (i + 1) + '</li>';
+    }
+    h += '</ol>';
+    if (X.answers[w]) {
+      if (S().gaveUp[w]) h += '<div class="hint-answer">' + X.answers[w] + '</div>';
+      else if (used >= list.length) h += '<p><button type="button" class="btn btn-ghost" data-hint-answer>Show the answer</button></p>';
+    }
+    return h + '</article>';
+  }
+  VC.openHints = function (w) { hintFor = w; VC.openModal(hintHtml(w)); };
+  function hintNext() { var st = S(); st.hints[hintFor] = (st.hints[hintFor] || 0) + 1; VC.save(); Snd.flip(); $('#modal-body').innerHTML = hintHtml(hintFor); }
+  function hintAnswer() { S().gaveUp[hintFor] = true; VC.save(); $('#modal-body').innerHTML = hintHtml(hintFor); }
+
+  /* Suspects board and notebook */
+  VC.renderSuspects = function () {
+    var marks = S().marks;
+    $('#board').innerHTML = C.suspects.map(function (s) {
+      var m = marks[s.id] || '';
+      var b = function (k, label) { return '<button type="button" class="btn btn-small' + (m === k ? ' is-on' : '') + '" data-mark="' + k + '" aria-pressed="' + (m === k) + '">' + label + '</button>'; };
+      return '<article class="sus' + (m ? ' is-' + m : '') + '" data-sus="' + s.id + '">' + Art.portrait(s.id) +
+        '<div class="sus-body"><h3>' + s.name + '</h3><p>' + s.role + '</p>' +
+        '<div class="sus-actions" role="group" aria-label="Your verdict on ' + s.name + '">' + b('suspect', 'Suspicious') + b('cleared', 'Cleared') + '</div>' +
+        '<button type="button" class="link" data-dossier="' + s.id + '">Read the file</button></div>' +
+        (m === 'cleared' ? '<span class="sus-stamp" aria-hidden="true">Cleared</span>' : '') + '</article>';
+    }).join('');
+  };
+  function mark(id, k) { var st = S(); st.marks[id] = st.marks[id] === k ? '' : k; VC.save(); Snd.click(); VC.renderSuspects(); }
+  function dossier(id) {
+    var s = C.suspect(id), cOpen = S().unlocked.indexOf('C') > -1;
+    VC.openModal('<article class="doc doc-dossier dos-one">' + Art.portrait(id) + '<div><h3>' + s.name + '</h3><p class="dos-role">' + s.role + ', ' + s.age + '</p>' +
+      '<dl class="kv kv-tight"><dt>Height</dt><dd>' + s.height + '</dd><dt>Mask tonight</dt><dd>' + s.mask + '</dd><dt>Office keycard</dt><dd>' + s.keycard + '</dd></dl>' +
+      '<p>' + s.about + '</p><div class="dos-links"><button type="button" class="btn btn-small" data-open="A6" data-jump-after="A6-' + id + '">First interview</button>' +
+      (cOpen ? '<button type="button" class="btn btn-small" data-open="C7" data-jump-after="C7-' + id + '">Second interview</button>' : '') + '</div></div></article>');
+  }
+  var noteTimer;
+  VC.renderNotes = function () { var ta = $('#notes'); if (document.activeElement !== ta) ta.value = S().notes || ''; };
+
+  /* Accusation */
+  VC.goAccuse = function () {
+    VC.closeModal();
+    var st = S();
+    if (st.accusation) { VC.reveal(st.accusation.answers, true); return; }
+    $('#accuse-form').innerHTML = C.accusation.map(function (q) {
+      var opts = q.type === 'suspect' ? C.suspects.map(function (s) {
+        return '<label class="opt opt-sus"><input type="radio" name="' + q.id + '" value="' + s.id + '">' + Art.portrait(s.id) + '<span>' + s.name + '</span></label>';
+      }).join('') : q.options.map(function (o) {
+        return '<label class="opt"><input type="radio" name="' + q.id + '" value="' + o.id + '"><span>' + o.t + '</span></label>';
+      }).join('');
+      return '<fieldset class="q q-' + q.id + '"><legend>' + q.q + '</legend><div class="opts">' + opts + '</div></fieldset>';
+    }).join('') + '<p class="accuse-msg" id="accuse-msg" aria-live="polite"></p><div class="accuse-actions">' +
+      '<button type="button" class="btn btn-ghost" data-back-file>Back to the case file</button><button type="submit" class="btn btn-gold">Make the accusation</button></div>';
+    VC.show('screen-accuse');
+  };
+  function submitAccusation(e) {
+    e.preventDefault();
+    var form = $('#accuse-form'), ans = {}, missing = 0;
+    C.accusation.forEach(function (q) { var c = form.querySelector('input[name="' + q.id + '"]:checked'); if (c) ans[q.id] = c.value; else missing++; });
+    if (missing) { $('#accuse-msg').textContent = 'Answer all four questions first. ' + missing + ' still open.'; return; }
+    var who = C.suspect(ans.who).name;
+    VC.confirm('One accusation. No second chances.', 'You are about to accuse ' + who + '. Are you both agreed?', 'We\u2019re sure', function () { VC.reveal(ans, false); });
+  }
+
+  function answerText(q, id) {
+    if (q.type === 'suspect') return C.suspect(id).name;
+    return q.options.filter(function (o) { return o.id === id; })[0].t;
+  }
+  VC.reveal = function (ans, instant) {
+    var st = S(), sol = X.solution, score = 0, res = {};
+    C.accusation.forEach(function (q) { res[q.id] = ans[q.id] === sol[q.id]; if (res[q.id]) score++; });
+    if (!st.accusation) { st.accusation = { answers: ans, score: score, elapsed: st.elapsed }; VC.save(); }
+    VC.show('screen-reveal');
+    var killer = C.suspect(sol.who), stage = $('#reveal-stage');
+    $('#booklet').hidden = true; $('#booklet').innerHTML = '';
+    stage.className = 'reveal-stage';
+    stage.innerHTML = '<div class="rv-intro"><p class="rv-line rv-1">Chief Inspector Duret reads your accusation aloud.</p><p class="rv-line rv-2">The killer is\u2026</p></div>' +
+      '<div class="rv-card"><div class="rv-flip"><div class="rv-face rv-front">' + Art.crownMark('rv-crown') + '</div>' +
+      '<div class="rv-face rv-back">' + Art.portrait(sol.who, 'portrait rv-portrait') + '<h2>' + killer.name + '</h2></div></div></div><div class="rv-result" id="rv-result"></div>';
+    function result() {
+      var r = !res.who ? X.ratings.wrong : score === 4 ? X.ratings.perfect : score === 3 ? X.ratings.good : X.ratings.who;
+      var st2 = S();
+      var list = C.accusation.map(function (q) {
+        var ok = res[q.id];
+        return '<li class="' + (ok ? 'is-ok' : 'is-bad') + '"><span class="v-q">' + q.q + '</span><span class="v-a">You said: ' + answerText(q, ans[q.id]) + '</span>' +
+          (ok ? '' : '<span class="v-c">The truth: ' + answerText(q, sol[q.id]) + '</span>') + '</li>';
+      }).join('');
+      var hints = (st2.hints.B || 0) + (st2.hints.C || 0) + (st2.hints.F || 0);
+      $('#rv-result').innerHTML = '<div class="stamp stamp-big">Case closed</div><h3>' + r[0] + '</h3><p class="rv-verdict">' + r[1] + '</p>' +
+        '<ul class="verdicts">' + list + '</ul><p class="rv-meta">You got ' + score + ' of 4. Time on the case: ' + VC.fmt(st2.accusation.elapsed) +
+        '. Hints used: ' + hints + '.</p><div class="rv-actions"><button type="button" class="btn btn-gold" data-booklet="0">Read what really happened</button>' +
+        '<button type="button" class="btn btn-ghost" data-back-file>Back to the case file</button></div>';
+      stage.classList.add('is-done');
+    }
+    if (instant || REDUCED) { stage.classList.add('step-2', 'step-3', 'step-4'); result(); return; }
+    Snd.roll(2.6);
+    setTimeout(function () { stage.classList.add('step-2'); }, 1300);
+    setTimeout(function () { stage.classList.add('step-3'); Snd.thud(); }, 3900);
+    setTimeout(function () { stage.classList.add('step-4'); }, 5100);
+    setTimeout(function () { result(); Snd.chime(); }, 6400);
+  };
+  function booklet(i) {
+    var ch = X.chapters; i = Math.max(0, Math.min(i, ch.length - 1));
+    var b = $('#booklet'); b.hidden = false;
+    b.innerHTML = '<article class="booklet-page"><p class="bk-count">Chapter ' + (i + 1) + ' of ' + ch.length + '</p><h2>' + ch[i].title + '</h2>' + ch[i].html +
+      '<nav class="bk-nav">' + (i > 0 ? '<button type="button" class="btn btn-ghost" data-booklet="' + (i - 1) + '">Previous chapter</button>' : '<span></span>') +
+      (i < ch.length - 1 ? '<button type="button" class="btn btn-gold" data-booklet="' + (i + 1) + '">Next chapter</button>' :
+        '<button type="button" class="btn btn-gold" data-new-case>Play again from the start</button>') + '</nav></article>';
+    b.scrollIntoView({ behavior: REDUCED ? 'auto' : 'smooth', block: 'start' }); Snd.flip();
+  }
+
+  /* Menus */
+  var HOWTO = '<article class="doc doc-howto"><h3>How the evening works</h3>' +
+    '<p>You are two detectives sharing one case file. Read everything together: the clues hide in plain sight and often only make sense side by side.</p>' +
+    '<p>The file comes in three envelopes. The first is open. Crack Victor\u2019s safe to open the second, then decode his notebook to open the third.</p>' +
+    '<p>Keep notes in the shared notebook and mark suspects as you rule them in or out. Progress saves itself in this browser, so you can stop and come back.</p>' +
+    '<p>Stuck? Every lock has three hints, from gentle to generous.</p>' +
+    '<p>When you both agree on who killed Victor, how and why, make your accusation. You get one.</p></article>';
+  VC.howTo = function () { VC.openModal(HOWTO); };
+  VC.newCase = function () {
+    VC.confirm('Start a new case?', 'This clears your progress, notes and hints on this device.', 'Start over', function () { VC.reset(); location.reload(); });
+  };
+  function menu() {
+    VC.openModal('<div class="confirm"><h3>Menu</h3><div class="menu-list">' +
+      '<button type="button" class="btn btn-ghost" data-howto>How to play</button>' +
+      '<button type="button" class="btn btn-ghost" data-to-title>Back to the title screen</button>' +
+      '<button type="button" class="btn btn-ghost" data-new-case>Start over</button></div></div>');
+  }
+
+  /* Title and setup */
+  function toTitle() {
+    VC.closeModal();
+    var st = S();
+    $('#btn-continue').hidden = !st.started;
+    $('#btn-new').textContent = st.started ? 'Start a new case' : 'Open the case file';
+    $('#btn-new').className = st.started ? 'btn btn-ghost' : 'btn btn-gold';
+    VC.show('screen-title');
+  }
+  function begin() {
+    var st = S();
+    st.names = [$('#name1').value.trim().slice(0, 24), $('#name2').value.trim().slice(0, 24)];
+    st.started = true; VC.save(); Snd.unlock();
+    VC.show('screen-game'); VC.renderGame('A'); Snd.deal(7);
+    setTimeout(function () { VC.openEvidence('A1'); }, REDUCED ? 100 : 1500);
+  }
+  function enterGame() {
+    Snd.unlock(); if (S().music) Snd.musicOn();
+    VC.show('screen-game'); VC.renderGame();
+  }
+
+  /* Wiring */
+  function init() {
+    var st = S();
+    $('#title-wheel').innerHTML = Art.roulette();
+    $('#setup-crown').innerHTML = Art.crownMark('crown-mark');
+    Snd.setSfx(st.sfx);
+    $('#btn-music').setAttribute('aria-pressed', String(st.music));
+    $('#btn-sfx').setAttribute('aria-pressed', String(st.sfx));
+    toTitle();
+
+    document.addEventListener('click', function (e) {
+      var t = e.target.closest('button, [data-close]');
+      if (!t) return;
+      var d = t.dataset;
+      if (d.ev) VC.openEvidence(d.ev);
+      else if (d.open) VC.openEvidence(d.open, d.jumpAfter);
+      else if (d.jump) { var el = document.getElementById(d.jump); if (el) el.scrollIntoView({ behavior: REDUCED ? 'auto' : 'smooth', block: 'start' }); }
+      else if (d.key) VC.pressKey(d.key);
+      else if (d.hints) VC.openHints(d.hints);
+      else if (t.hasAttribute('data-hint-next')) hintNext();
+      else if (t.hasAttribute('data-hint-answer')) hintAnswer();
+      else if (d.mark) mark(t.closest('[data-sus]').dataset.sus, d.mark);
+      else if (d.dossier) dossier(d.dossier);
+      else if (t.hasAttribute('data-go-accuse')) VC.goAccuse();
+      else if (t.hasAttribute('data-back-file')) { VC.closeModal(); VC.show('screen-game'); VC.renderGame(); }
+      else if (d.booklet !== undefined) booklet(+d.booklet);
+      else if (t.hasAttribute('data-new-case')) VC.newCase();
+      else if (d.tab) { Snd.click(); VC.setTab(d.tab); }
+      else if (t.hasAttribute('data-howto')) VC.howTo();
+      else if (t.hasAttribute('data-to-title')) toTitle();
+      else if (t.hasAttribute('data-confirm-yes')) { var fn = VC._onYes; VC._onYes = null; VC.closeModal(); if (fn) fn(); }
+      else if (t.hasAttribute('data-close')) VC.closeModal();
+    });
+
+    $('#btn-new').addEventListener('click', function () {
+      var go = function () { Snd.unlock(); $('#name1').value = S().names[0] || ''; $('#name2').value = S().names[1] || ''; VC.show('screen-setup'); setTimeout(function () { $('#name1').focus(); }, 50); };
+      if (S().started) VC.confirm('Start a new case?', 'This clears your progress, notes and hints on this device.', 'Start over', function () { VC.reset(); go(); });
+      else go();
+    });
+    $('#btn-continue').addEventListener('click', enterGame);
+    $('#btn-title-howto').addEventListener('click', VC.howTo);
+    $('#setup-form').addEventListener('submit', function (e) { e.preventDefault(); begin(); });
+    $('#btn-setup-back').addEventListener('click', toTitle);
+    $('#btn-menu').addEventListener('click', menu);
+    $('#btn-accuse').addEventListener('click', VC.goAccuse);
+    $('#accuse-form').addEventListener('submit', submitAccusation);
+    $('#accuse-form').addEventListener('change', function (e) {
+      if (e.target.name) $$('input[name="' + e.target.name + '"]', this).forEach(function (r) { r.closest('.opt').classList.toggle('is-picked', r.checked); });
+      Snd.click();
+    });
+    $('#btn-music').addEventListener('click', function () {
+      var st2 = S(); st2.music = !st2.music; VC.save(); this.setAttribute('aria-pressed', String(st2.music));
+      if (st2.music) Snd.musicOn(); else Snd.musicOff();
+    });
+    $('#btn-sfx').addEventListener('click', function () {
+      var st2 = S(); st2.sfx = !st2.sfx; VC.save(); Snd.setSfx(st2.sfx); this.setAttribute('aria-pressed', String(st2.sfx)); Snd.click();
+    });
+    $('#notes').addEventListener('input', function () {
+      var ta = this; clearTimeout(noteTimer); $('#notes-saved').textContent = 'Saving\u2026';
+      noteTimer = setTimeout(function () { S().notes = ta.value; VC.save(); $('#notes-saved').textContent = 'Saved on this device'; }, 400);
+    });
+    document.addEventListener('keydown', function (e) {
+      var modalOpen = !$('#modal').hidden, tag = (e.target.tagName || '').toLowerCase();
+      if (e.key === 'Escape' && modalOpen) { VC.closeModal(); return; }
+      if (tag === 'input' || tag === 'textarea') return;
+      if (modalOpen && (e.key === 'ArrowRight' || e.key === 'ArrowLeft')) {
+        var btns = $$('#modal-nav [data-open]');
+        var want = e.key === 'ArrowRight' ? 'Next' : 'Previous';
+        btns.forEach(function (b) { if (b.textContent.indexOf(want) === 0) b.click(); });
+        return;
+      }
+      if (!modalOpen && $('#safe') && !$('#screen-game').hidden && S().tab === 'file') {
+        if (/^[0-9]$/.test(e.key)) VC.pressKey(e.key);
+        else if (e.key === 'Backspace') { e.preventDefault(); VC.pressKey('back'); }
+        else if (e.key === 'Enter') VC.pressKey('open');
+      }
+    });
+    window.addEventListener('beforeunload', VC.save);
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init); else init();
+})();
+
+</script>
+</body>
+</html>
