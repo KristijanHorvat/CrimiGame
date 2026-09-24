@@ -354,6 +354,9 @@ blockquote.hand { font-size: 1.6rem; line-height: 1.25; margin: .5rem 0 .3rem; p
 .hint.is-open { border-color: var(--brass); }
 .hint.is-locked { color: rgba(239, 230, 210, .4); }
 .hint-answer { margin-top: 1rem; padding: 1rem 1.2rem; border-radius: 10px; background: #f3ecdc; color: var(--ink); }
+.unlock-note { text-align: center; }
+.unlock-note .seal { margin: 0 auto 1rem; }
+.unlock-note .confirm-actions { justify-content: center; }
 .confirm-actions, .menu-list { display: flex; flex-wrap: wrap; gap: .8rem; margin-top: 1.2rem; }
 .menu-list { flex-direction: column; align-items: stretch; }
 
@@ -505,6 +508,7 @@ blockquote.hand { font-size: 1.6rem; line-height: 1.25; margin: .5rem 0 .3rem; p
         <h3 id="evening-h">Set the scene</h3>
         <p>Dim the lights, turn your phones face down and switch on the music with the note button in the corner. Everything you need is on this screen, though a pen and paper are nice for scribbling theories.</p>
         <p>Take turns reading the documents aloud. The best clues are the ones only one of you notices.</p>
+        <p>Printed the case file? Keep envelopes B and C sealed until the game tells you to open them.</p>
         <div class="drinks">
           <div class="drink"><h4>The Last Hand</h4><p>Cognac, a splash of sweet vermouth and a twist of orange peel, stirred over one big ice cube.</p><p class="drink-note">Victor&rsquo;s nightly glass.</p></div>
           <div class="drink"><h4>Midnight Blue</h4><p>Tonic, a squeeze of lime and a few crushed blueberries. Add gin if you like.</p><p class="drink-note">Named after Celeste&rsquo;s set.</p></div>
@@ -1848,7 +1852,14 @@ window.Sound = (function () {
     save(); VC.renderTop(); VC.setTab('file'); VC.renderFile(id);
     var sec = $('[data-env="' + id + '"]');
     if (sec) sec.scrollIntoView({ behavior: REDUCED ? 'auto' : 'smooth', block: 'start' });
-    Snd.deal(7); VC.toast('Envelope ' + id + ' is open.');
+    Snd.deal(7);
+    var env = C.envelopes.filter(function (x) { return x.id === id; })[0];
+    setTimeout(function () {
+      VC.openModal('<div class="confirm unlock-note"><span class="seal" aria-hidden="true">' + id + '</span>' +
+        '<h3>Envelope ' + id + ' is open</h3><p>' + env.title + '. The new evidence is in your case file on screen.</p>' +
+        '<p>Playing with the printed case file? Break the seal on your real envelope ' + id + ' now.</p>' +
+        '<div class="confirm-actions"><button type="button" class="btn btn-gold" data-close>Let\u2019s see it</button></div></div>');
+    }, REDUCED ? 0 : 900);
   };
 
   /* Evidence viewer */
@@ -2135,6 +2146,7 @@ window.Sound = (function () {
     '<p>The file comes in three envelopes. The first is open. Crack Victor\u2019s safe to open the second, then decode his notebook to open the third.</p>' +
     '<p>Keep notes in the shared notebook and mark suspects as you rule them in or out. Progress saves itself in this browser, so you can stop and come back.</p>' +
     '<p>Stuck? Every lock has three hints, from gentle to generous.</p>' +
+    '<p>Printed the case file? Play from the paper and use the game as headquarters for the locks, hints and accusation. Keep envelopes B and C sealed until the game tells you to open them.</p>' +
     '<p>When you both agree on who killed Victor, how and why, make your accusation. You get one.</p></article>';
   VC.howTo = function () { VC.openModal(HOWTO); };
   VC.newCase = function () {
